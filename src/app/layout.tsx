@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { LanguageProvider } from '@/lib/LanguageContext'
@@ -102,7 +102,6 @@ export const metadata: Metadata = {
     apple: [{ url: '/apple-touch-icon.png?v=metis-2026-01-14', type: 'image/png', sizes: '180x180' }],
   },
   manifest: '/manifest.json',
-  themeColor: '#dde0e3',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
@@ -111,6 +110,10 @@ export const metadata: Metadata = {
   other: {
     'mobile-web-app-capable': 'yes',
   },
+}
+
+export const viewport: Viewport = {
+  themeColor: '#dde0e3',
 }
 
 export default function RootLayout({
