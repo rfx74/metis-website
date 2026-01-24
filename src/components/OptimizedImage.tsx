@@ -1,13 +1,14 @@
 'use client'
 
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 interface OptimizedImageProps {
   src: string
   alt: string
   width?: number
   height?: number
+  sizes?: string
   className?: string
   priority?: boolean
   quality?: number
@@ -18,19 +19,23 @@ export default function OptimizedImage({
   alt,
   width,
   height,
+  sizes,
   className = '',
   priority = false,
   quality = 90
 }: OptimizedImageProps) {
-  const [imageSrc, setImageSrc] = useState(src)
+  const webpSrc = useMemo(() => src.replace(/\.(png|jpg|jpeg)$/i, '.webp'), [src])
+  const [imageSrc, setImageSrc] = useState(webpSrc)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Try WebP first, fallback to original format
-  const webpSrc = src.replace(/\.(png|jpg|jpeg)$/i, '.webp')
+  useEffect(() => {
+    setImageSrc(webpSrc)
+    setIsLoading(true)
+  }, [webpSrc])
 
   const handleError = () => {
     // Fallback to original format if WebP fails
-    if (imageSrc.includes('.webp')) {
+    if (imageSrc === webpSrc && webpSrc !== src) {
       setImageSrc(src)
     }
   }
@@ -47,10 +52,11 @@ export default function OptimizedImage({
       )}
       
       <Image
-        src={webpSrc}
+        src={imageSrc}
         alt={alt}
         width={width}
         height={height}
+        sizes={sizes}
         className={`transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
         priority={priority}
         quality={quality}

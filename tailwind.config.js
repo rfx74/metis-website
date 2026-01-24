@@ -8,8 +8,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'metis-start': '#dde0e3',
-        'metis-end': '#dfe2e5',
+        'metis-start': '#dee0e3',
+        'metis-end': '#dee0e3',
         'glass-white': 'rgba(255, 255, 255, 0.08)',
         'glass-border': 'rgba(255, 255, 255, 0.12)',
       },
@@ -17,7 +17,7 @@ module.exports = {
         sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
       },
       backgroundImage: {
-        'metis-gradient': 'linear-gradient(135deg, #dde0e3 0%, #dfe2e5 100%)',
+        'metis-gradient': 'linear-gradient(135deg, #dee0e3 0%, #dee0e3 100%)',
         'glass-gradient': 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%)',
       },
       backdropBlur: {

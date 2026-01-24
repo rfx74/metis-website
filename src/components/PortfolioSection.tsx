@@ -1,39 +1,169 @@
 'use client'
 
 import { motion, useInView } from 'framer-motion'
-import { useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from '@/lib/LanguageContext'
 
 export default function PortfolioSection() {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
-  const [hoveredProject, setHoveredProject] = useState<number | null>(null)
   const t = useTranslation()
+  const [activeStep, setActiveStep] = useState(0)
+  const [isFlipped, setIsFlipped] = useState(false)
 
-  const technologies = ['Next.js', 'React', 'Stripe', 'MongoDB']
-  const projectGradients = [
-    'from-blue-500/30 to-purple-500/30',
-    'from-green-500/30 to-blue-500/30',
-    'from-orange-500/30 to-red-500/30'
-  ]
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([])
 
-  const projects = [
-    t.portfolio.projects.fintech,
-    t.portfolio.projects.defi,
-    t.portfolio.projects.tokenization
-  ]
+  const icons = useMemo(
+    () => [
+    // Strategy
+    (
+      <svg key="strategy" viewBox="0 0 24 24" fill="none" className="w-7 h-7" aria-hidden="true">
+        <path
+          d="M4 20V6a2 2 0 0 1 2-2h10.5a2 2 0 0 1 2 2v14"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+        />
+        <path d="M8 8h6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+        <path d="M8 12h8" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+        <path d="M8 16h5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+      </svg>
+    ),
+    // Architecture
+    (
+      <svg key="architecture" viewBox="0 0 24 24" fill="none" className="w-7 h-7" aria-hidden="true">
+        <path
+          d="M6 7a2 2 0 1 1 4 0a2 2 0 0 1-4 0Z"
+          stroke="currentColor"
+          strokeWidth="2.2"
+        />
+        <path
+          d="M14 6a2 2 0 1 1 4 0a2 2 0 0 1-4 0Z"
+          stroke="currentColor"
+          strokeWidth="2.2"
+        />
+        <path
+          d="M10 17a2 2 0 1 1 4 0a2 2 0 0 1-4 0Z"
+          stroke="currentColor"
+          strokeWidth="2.2"
+        />
+        <path
+          d="M9.5 8.5l5-2"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+        />
+        <path
+          d="M9.5 8.5l2.5 6.5"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+        />
+        <path
+          d="M16 7.5l-2 7.5"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+        />
+      </svg>
+    ),
+    // Agile
+    (
+      <svg key="agile" viewBox="0 0 24 24" fill="none" className="w-7 h-7" aria-hidden="true">
+        <path
+          d="M12 3a9 9 0 1 0 9 9"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+        />
+        <path d="M12 7v6l4 2" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+        <path d="M21 3v6h-6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+      </svg>
+    ),
+    // Release
+    (
+      <svg key="release" viewBox="0 0 24 24" fill="none" className="w-7 h-7" aria-hidden="true">
+        <path
+          d="M5 19l14-7-14-7v6l10 1-10 1v6Z"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinejoin="round"
+        />
+      </svg>
+    )
+    ],
+    []
+  )
+
+  const iconStyles = useMemo(
+    () => [
+      { color: 'text-cyan-500', glow: 'bg-cyan-400/35' },
+      { color: 'text-fuchsia-500', glow: 'bg-fuchsia-400/35' },
+      { color: 'text-yellow-500', glow: 'bg-yellow-300/40' },
+      { color: 'text-emerald-500', glow: 'bg-emerald-400/35' }
+    ],
+    []
+  )
+
+  const steps = t.portfolio.steps
+  const safeActiveStep = Math.min(Math.max(activeStep, 0), Math.max(steps.length - 1, 0))
+  const currentStep = steps[safeActiveStep]
+  const currentIconStyle = iconStyles[safeActiveStep] ?? iconStyles[0]
+  const currentIcon = icons[safeActiveStep] ?? icons[0]
+
+  const stepImages = useMemo(
+    () => [
+      '/method/step-1-strategy.webp',
+      '/method/step-2-architecture.webp',
+      '/method/step-3-agile.webp',
+      '/method/step-4-release.webp'
+    ],
+    []
+  )
+
+  const currentImage = stepImages[safeActiveStep] ?? stepImages[0]
+
+  // Preload method images so they are ready on first interaction
+  const preloadImages = stepImages
+
+  useEffect(() => {
+    if (!isInView) return
+    const el = tabRefs.current[safeActiveStep]
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+    }
+  }, [safeActiveStep, isInView])
+
+  useEffect(() => {
+    setIsFlipped(false)
+  }, [safeActiveStep])
+
+  const toggleFlip = () => {
+    setIsFlipped((prev) => !prev)
+  }
 
   return (
-    <section id="portfolio" ref={ref} className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 py-20 lg:py-32">
+    <section
+      id="method"
+      ref={ref}
+      className="min-h-screen py-20 lg:py-32 bg-transparent"
+    >
       <div className="container mx-auto px-4 sm:px-6 text-center">
+        {/* Preload method images to avoid delayed loads on tab click */}
+        <div className="sr-only" aria-hidden="true">
+          {preloadImages.map((src) => (
+            <img key={src} src={src} alt="" loading="eager" />
+          ))}
+        </div>
+
         <motion.h2 
           initial={{ opacity: 0, y: 60 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 sm:mb-8"
         >
-          {t.portfolio.title.split(' ')[0]} <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            {t.portfolio.title.split(' ').slice(1).join(' ')}
+          <span className="bg-gradient-to-r from-blue-600 to-fuchsia-600 bg-clip-text text-transparent">
+            {t.portfolio.title}
           </span>
         </motion.h2>
         
@@ -41,101 +171,148 @@ export default function PortfolioSection() {
           initial={{ opacity: 0, y: 40 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-          className="text-lg sm:text-xl lg:text-2xl text-gray-700 mb-12 sm:mb-16 max-w-3xl mx-auto px-4"
+          className="text-lg sm:text-xl lg:text-2xl text-white mb-8 sm:mb-10 max-w-4xl mx-auto px-4 leading-relaxed text-justify italic drop-shadow-[0_2px_10px_rgba(0,0,0,0.35)]"
         >
-          {t.portfolio.description}
+          {t.portfolio.intro}
+        </motion.p>
+
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, delay: 0.35 }}
+          className="text-base sm:text-lg font-bold text-[#fff404] mb-6"
+        >
+          {t.portfolio.stepsHeading}
         </motion.p>
         
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 mb-12 sm:mb-16">
-            {/* Featured Project */}
-            <motion.div 
-              initial={{ opacity: 0, x: -60 }}
-              animate={isInView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-              className="glass-light rounded-3xl p-6 sm:p-8 md:p-12"
-              onHoverStart={() => setHoveredProject(0)}
-              onHoverEnd={() => setHoveredProject(null)}
-            >
-              <motion.div 
-                className="w-full h-48 sm:h-64 bg-gradient-to-br from-blue-500/30 to-green-500/30 rounded-xl mb-6 sm:mb-8 relative overflow-hidden"
-                animate={hoveredProject === 0 ? { scale: 1.05 } : { scale: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                <div className="absolute bottom-4 left-4 text-white text-sm font-medium opacity-80">
-                  E-commerce Platform
-                </div>
-              </motion.div>
-              
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                {t.portfolio.featured.title}
-              </h3>
-              
-              <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base leading-relaxed">
-                {t.portfolio.featured.description}
-              </p>
-              
-              <div className="flex flex-wrap gap-2 mb-4 sm:mb-6 justify-center">
-                {technologies.map((tech, index) => (
-                  <motion.span 
-                    key={tech} 
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                    transition={{ duration: 0.4, delay: 0.8 + index * 0.1 }}
-                    className="px-2 sm:px-3 py-1 bg-gray-200 rounded-full text-xs sm:text-sm text-gray-800"
-                  >
-                    {tech}
-                  </motion.span>
-                ))}
+          {/* Step selector (one card at a time) */}
+          <div className="max-w-5xl mx-auto mb-8">
+            <div className="border-b border-black/10">
+              <div className="flex items-center justify-start sm:justify-center gap-6 sm:gap-8 overflow-x-auto sm:overflow-x-visible py-2 px-2 sm:px-0 snap-x snap-mandatory">
+                {steps.map((step, index) => {
+                  const isActive = index === safeActiveStep
+
+                  return (
+                    <button
+                      key={step.title}
+                      ref={(node) => {
+                        tabRefs.current[index] = node
+                      }}
+                      type="button"
+                      onClick={() => {
+                        setActiveStep(index)
+                        setIsFlipped(false)
+                      }}
+                      className={`relative whitespace-nowrap px-1 pb-3 text-xs sm:text-sm font-bold transition-colors duration-200 snap-start ${
+                        isActive ? 'text-white' : 'text-white/80 hover:text-white'
+                      }`}
+                      aria-current={isActive ? 'step' : undefined}
+                    >
+                      {step.title}
+                      {isActive ? (
+                        <span
+                          className="absolute left-0 right-0 -bottom-[1px] h-[3px] rounded-full bg-gradient-to-r from-cyan-500 to-fuchsia-500"
+                          aria-hidden="true"
+                        />
+                      ) : null}
+                    </button>
+                  )
+                })}
               </div>
-              
-              <motion.button 
-                className="btn-secondary-dark w-full sm:w-auto"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {t.portfolio.featured.viewDetails}
-              </motion.button>
-            </motion.div>
-            
-            {/* Other Projects Grid */}
-            <motion.div 
-              initial={{ opacity: 0, x: 60 }}
-              animate={isInView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6"
-            >
-              {projects.map((project, index) => (
-                <motion.div 
-                  key={index}
-                  initial={{ opacity: 0, y: 40 }}
-                  animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.6, delay: 0.8 + index * 0.15 }}
-                  className="glass-light rounded-2xl p-4 sm:p-6 group cursor-pointer"
-                  onHoverStart={() => setHoveredProject(index + 1)}
-                  onHoverEnd={() => setHoveredProject(null)}
-                  whileHover={{ y: -5 }}
-                >
-                  <motion.div 
-                    className={`w-full h-24 sm:h-32 bg-gradient-to-br ${projectGradients[index]} rounded-xl mb-3 sm:mb-4 relative overflow-hidden`}
-                    animate={hoveredProject === index + 1 ? { scale: 1.05 } : { scale: 1 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent group-hover:from-black/20 transition-all duration-300" />
-                  </motion.div>
-                  
-                  <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-300">
-                    {project.title}
-                  </h4>
-                  
-                  <p className="text-gray-600 text-sm group-hover:text-gray-700 transition-colors duration-300">
-                    {project.description}
-                  </p>
-                </motion.div>
-              ))}
-            </motion.div>
+            </div>
           </div>
+
+          {/* Active card */}
+          <motion.div
+            key={currentStep?.title ?? safeActiveStep}
+            initial={{ opacity: 0, y: 18 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.45, ease: 'easeOut' }}
+            className="relative"
+          >
+            <div
+              className="relative h-full cursor-pointer [perspective:1200px] outline-none focus:outline-none select-none [-webkit-tap-highlight-color:transparent]"
+              role="button"
+              tabIndex={0}
+              onClick={toggleFlip}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') toggleFlip()
+              }}
+            >
+              <div
+                className={`relative grid transition-transform duration-700 [transform-style:preserve-3d] ${
+                  isFlipped ? '[transform:rotateY(180deg)]' : '[transform:rotateY(0deg)]'
+                }`}
+              >
+                {/* Front */}
+                <div className="glass-light rounded-3xl p-6 sm:p-8 text-left [backface-visibility:hidden] [grid-area:1/1] outline-none">
+                  <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-6 sm:gap-8 items-start">
+                    <div>
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="relative w-12 h-12 rounded-2xl bg-white/60 border border-black/5 flex items-center justify-center overflow-hidden">
+                          <div className={`absolute -inset-3 blur-2xl ${currentIconStyle.glow}`} aria-hidden="true" />
+                          <div className={`relative ${currentIconStyle.color}`}>{currentIcon}</div>
+                        </div>
+                        <h3 className="text-lg sm:text-xl font-bold text-white drop-shadow-[0_2px_14px_rgba(0,0,0,0.65)]">{currentStep?.title}</h3>
+                      </div>
+
+                      <p className="text-white/90 leading-relaxed text-justify drop-shadow-[0_2px_12px_rgba(0,0,0,0.55)]">
+                        <span className="font-semibold italic">{currentStep?.lead} </span>
+                        <span>{currentStep?.body}</span>
+                      </p>
+                    </div>
+
+                    {/* Visual panel */}
+                    <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/30 via-white/20 to-white/10 shadow-[0_25px_50px_rgba(0,0,0,0.18)]">
+                      <div className={`absolute -inset-10 blur-3xl ${currentIconStyle.glow}`} aria-hidden="true" />
+                      <div className="relative">
+                        <img
+                          src={currentImage}
+                          alt={currentStep?.title ?? 'Method step'}
+                          className="w-full h-auto object-cover rounded-3xl"
+                          loading={safeActiveStep === 0 ? 'eager' : 'lazy'}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Back */}
+                <div className="glass-light rounded-3xl p-6 sm:p-8 text-left [backface-visibility:hidden] [transform:rotateY(180deg)] [grid-area:1/1] outline-none">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="relative w-12 h-12 rounded-2xl bg-white/60 border border-black/5 flex items-center justify-center overflow-hidden">
+                      <div className={`absolute -inset-3 blur-2xl ${currentIconStyle.glow}`} aria-hidden="true" />
+                      <div className={`relative ${currentIconStyle.color}`}>{currentIcon}</div>
+                    </div>
+                  </div>
+
+                  <p className="text-white font-bold leading-relaxed text-justify drop-shadow-[0_2px_12px_rgba(0,0,0,0.55)]">
+                    {(currentStep as any)?.backDescription ?? currentStep?.body}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 1.1 }}
+            className="mt-10 sm:mt-14 text-left"
+          >
+            <div className="rounded-3xl bg-gradient-to-r from-cyan-400/80 via-fuchsia-500/80 to-yellow-300/80 p-[1.5px] shadow-[0_16px_40px_rgba(18,115,197,0.22)]">
+              <div className="glass-light rounded-3xl p-6 sm:p-8">
+                <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-3">
+                  {t.portfolio.whyTitle}
+                </h3>
+                <p className="text-slate-800 leading-relaxed text-justify">
+                  <span className="font-bold">{t.portfolio.whyLead} </span>
+                  <span>{t.portfolio.whyBody}</span>
+                </p>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>

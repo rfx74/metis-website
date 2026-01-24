@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 export default function WorkInProgressHero() {
 
   return (
-    <section className="relative h-screen w-full overflow-hidden bg-gradient-to-br from-[#dde0e3] to-[#dfe2e5]">
+    <section className="relative h-screen w-full overflow-hidden bg-metis-gradient">
       {/* Content Container */}
       <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6">
         

@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Metis Srl - Innovative IT Solutions | Soluzioni IT Innovative',
-  description: 'Specialized in custom ecommerce solutions, fintech platforms, and DeFi innovations. Specializzati in soluzioni ecommerce personalizzate, piattaforme fintech e innovazioni DeFi.',
+  description: 'Specialized in custom e-commerce solutions, fintech platforms, and DeFi innovations. Specializzati in soluzioni e-commerce su misura, piattaforme fintech e innovazioni DeFi.',
 }
 
 export default function RootLayout({

@@ -8,8 +8,8 @@
   --metis-primary: #1a1a1a;
   --metis-secondary: #2a2a2a;
   --metis-accent: #3a3a3a;
-  --metis-start: #dde0e3;
-  --metis-end: #dfe2e5;
+  --metis-start: #dee0e3;
+  --metis-end: #dee0e3;
   --glass-bg: rgba(0, 0, 0, 0.15);
   --glass-border: rgba(0, 0, 0, 0.2);
   --text-primary: #1a1a1a;
@@ -41,7 +41,15 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  background: linear-gradient(135deg, var(--metis-start) 0%, var(--metis-end) 100%);
+  background: linear-gradient(
+    to bottom,
+    #070a12 0%,
+    #0b0f1a 18%,
+    #111a2a 36%,
+    #2a3344 56%,
+    #b8bdc7 80%,
+    #dee0e3 100%
+  );
   color: var(--text-primary);
   line-height: 1.6;
   font-weight: 400;
@@ -64,12 +72,12 @@ a:hover {
   align-items: center;
   justify-content: center;
   padding: 1rem 2rem;
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-  color: white;
+  background: #fff404;
+  color: var(--metis-primary);
   font-weight: 600;
   border-radius: 9999px;
-  border: 1px solid rgba(37, 99, 235, 0.3);
-  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -81,8 +89,8 @@ a:hover {
 
 .btn-primary:hover {
   transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 15px 35px rgba(37, 99, 235, 0.4);
-  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.18);
+  background: #fff404;
 }
 
 .btn-primary:active {
@@ -145,6 +153,17 @@ a:hover {
   transform: translateY(0) scale(0.95);
 }
 
+/* Subtle text stroke for emphasis */
+.text-stroke-black-sm {
+  -webkit-text-stroke: 1px rgba(0, 0, 0, 0.35);
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.text-stroke-white-xs {
+  -webkit-text-stroke: 0.4px rgba(255, 255, 255, 0.6);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.28);
+}
+
 /* Logo styling */
 .logo-dark {
   filter: brightness(0) saturate(100%) invert(13%) sepia(7%) saturate(466%) hue-rotate(314deg) brightness(96%) contrast(88%);
@@ -194,20 +213,13 @@ a:hover {
 
 .card-hover:hover {
   transform: scale(1.05) translateY(-8px);
-  box-shadow: 0 25px 50px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.18);
 }
 
 /* Smooth scrolling and typography */
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
-}
-
-/* Custom scrollbar with cross-browser support */
-* {
-  /* Firefox - supported by Firefox 64+ */
-  scrollbar-width: thin;
-  scrollbar-color: rgba(59, 130, 246, 0.6) transparent;
 }
 
 /* Webkit browsers (Chrome, Safari, Edge) */
@@ -222,13 +234,63 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+  background: linear-gradient(135deg, rgba(26, 26, 26, 0.7) 0%, rgba(26, 26, 26, 0.95) 100%);
   border-radius: 4px;
   transition: all 0.3s ease;
 }
 
+/* Footer wordmark (progressive enhancement) */
+.metis-wordmark {
+  position: relative;
+  width: 220px;
+  height: 54px;
+}
+
+.metis-wordmark__fallback {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transform: scale(1.14);
+  filter:
+    drop-shadow(0 10px 28px rgba(31, 222, 254, 0.28))
+    drop-shadow(0 14px 34px rgba(255, 69, 169, 0.24))
+    drop-shadow(0 18px 44px rgba(255, 244, 4, 0.18));
+}
+
+.metis-wordmark__gradient {
+  display: none;
+}
+
+@supports ((-webkit-mask-image: linear-gradient(#000, #000)) or (mask-image: linear-gradient(#000, #000))) {
+  .metis-wordmark__fallback {
+    opacity: 0;
+  }
+
+  .metis-wordmark__gradient {
+    display: block;
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(90deg, #1fdefe 0%, #ff45a9 55%, #fff404 100%);
+    background-size: 140% 140%;
+    filter:
+      drop-shadow(0 12px 30px rgba(31, 222, 254, 0.42))
+      drop-shadow(0 16px 38px rgba(255, 69, 169, 0.36))
+      drop-shadow(0 20px 48px rgba(255, 244, 4, 0.28));
+    transform: scale(1.14);
+    -webkit-mask-image: url('/logo-solo-scritta.webp');
+    mask-image: url('/logo-solo-scritta.webp');
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+  }
+}
+
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, rgba(26, 26, 26, 0.8) 0%, rgba(26, 26, 26, 1) 100%);
   transform: scale(1.1);
 }
 
@@ -276,7 +338,7 @@ html {
 
 /* Professional focus states */
 *:focus {
-  outline: 2px solid rgba(59, 130, 246, 0.5);
+  outline: 2px solid rgba(26, 26, 26, 0.45);
   outline-offset: 2px;
 }
 
@@ -397,4 +459,17 @@ html {
     --metis-start: #1a1a1a;
     --metis-end: #2a2a2a;
   }
+}
+
+/* Global vertical gradient for SPA background (dark top → light bottom) */
+.bg-metis-gradient {
+  background: linear-gradient(
+    to bottom,
+    #070a12 0%,
+    #0b0f1a 18%,
+    #111a2a 36%,
+    #2a3344 56%,
+    #b8bdc7 80%,
+    #dee0e3 100%
+  );
 }

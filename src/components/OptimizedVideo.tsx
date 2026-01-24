@@ -4,20 +4,33 @@ import { useEffect, useRef, useState } from 'react'
 
 interface OptimizedVideoProps {
   src: string
+  webmSrc?: string
   className?: string
+  objectFit?: 'cover' | 'contain'
   poster?: string
   onLoadedData?: () => void
+  loadingClassName?: string
+  errorClassName?: string
 }
 
 export default function OptimizedVideo({ 
   src, 
+  webmSrc,
   className = '', 
+  objectFit = 'cover',
   poster,
-  onLoadedData 
+  onLoadedData,
+  loadingClassName = 'bg-metis-gradient',
+  errorClassName = 'bg-metis-gradient'
 }: OptimizedVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const onLoadedDataRef = useRef<OptimizedVideoProps['onLoadedData']>(onLoadedData)
   const [isLoaded, setIsLoaded] = useState(false)
   const [error, setError] = useState(false)
+
+  useEffect(() => {
+    onLoadedDataRef.current = onLoadedData
+  }, [onLoadedData])
 
   useEffect(() => {
     const video = videoRef.current
@@ -45,7 +58,7 @@ export default function OptimizedVideo({
 
     const handleLoadedData = () => {
       setIsLoaded(true)
-      onLoadedData?.()
+      onLoadedDataRef.current?.()
       
       // Optimize video playback con retry logic
       const attemptPlay = async () => {
@@ -100,11 +113,11 @@ export default function OptimizedVideo({
       video.removeEventListener('error', handleError)
       video.removeEventListener('canplay', handleCanPlay)
     }
-  }, [onLoadedData])
+  }, [src])
 
   if (error) {
     return (
-      <div className={`bg-metis-gradient ${className}`}>
+      <div className={`${errorClassName} ${className}`}>
         <div className="w-full h-full flex items-center justify-center">
           <div className="text-center text-gray-600">
             <div className="text-4xl mb-4">🎬</div>
@@ -119,7 +132,7 @@ export default function OptimizedVideo({
     <div className={`relative ${className}`}>
       {/* Loading indicator */}
       {!isLoaded && (
-        <div className="absolute inset-0 bg-metis-gradient animate-pulse flex items-center justify-center z-10">
+        <div className={`absolute inset-0 ${loadingClassName} animate-pulse flex items-center justify-center z-10`}>
           <div className="text-center text-gray-600">
             <div className="w-12 h-12 border-4 border-gray-300 border-t-gray-600 rounded-full animate-spin mb-4"></div>
             <p>Loading video...</p>
@@ -129,7 +142,7 @@ export default function OptimizedVideo({
       
       <video
         ref={videoRef}
-        className={`w-full h-full object-cover object-center transition-opacity duration-1000 ${
+        className={`w-full h-full ${objectFit === 'contain' ? 'object-contain' : 'object-cover'} object-center transition-opacity duration-1000 ${
           isLoaded ? 'opacity-100' : 'opacity-0'
         }`}
         poster={poster}
@@ -141,12 +154,12 @@ export default function OptimizedVideo({
         controlsList="nodownload nofullscreen noremoteplaybook"
         disablePictureInPicture
       >
-        {/* Ottimizzato per formati multipli - WebM first per performance */}
-        <source src={src.replace('.mp4', '.webm')} type="video/webm" />
+        {/* WebM first (optional) for performance */}
+        {webmSrc ? <source src={webmSrc} type="video/webm" /> : null}
         <source src={src} type="video/mp4" />
         
         {/* Fallback per browser molto vecchi */}
-        <div className="w-full h-full bg-metis-gradient flex items-center justify-center">
+        <div className={`w-full h-full ${errorClassName} flex items-center justify-center`}>
           <p className="text-gray-600">Your browser doesn't support video playback.</p>
         </div>
       </video>
