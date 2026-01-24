@@ -1,0 +1,30 @@
+{
+  "name": "Metis Srl - Innovative IT Solutions",
+  "short_name": "Metis",
+  "description": "Soluzioni IT innovative: e-commerce, AI, automazioni, ERP, DeFi e consulenza",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#dde0e3",
+  "theme_color": "#dde0e3",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["business", "productivity", "technology"],
+  "lang": "it-IT",
+  "dir": "ltr"
+}

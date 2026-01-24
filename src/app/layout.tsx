@@ -11,24 +11,63 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://metis-tech.it'
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'Metis Srl - Innovative IT Solutions | Soluzioni IT Innovative',
+    default: 'Metis Srl - Innovative IT Solutions | E-commerce, AI, Automazioni, ERP',
     template: '%s | Metis Srl',
   },
   description:
-    'Custom e-commerce, AI chatbots, generative AI, automation, ERP systems, marketing & consulting. e-commerce su misura, chatbot AI, IA generativa, automazioni, sistemi ERP, marketing e consulenza.',
+    'Metis Srl: soluzioni IT innovative per PMI e startup. E-commerce su misura, chatbot AI, intelligenza artificiale generativa, automazioni aziendali, sistemi ERP, tokenizzazione asset e consulenza digitale. Custom e-commerce, AI chatbots, business automation, ERP systems, DeFi solutions & digital consulting.',
+  keywords: [
+    'e-commerce custom',
+    'chatbot AI',
+    'intelligenza artificiale',
+    'automazioni aziendali',
+    'sistemi ERP',
+    'tokenizzazione asset',
+    'consulenza digitale',
+    'DeFi',
+    'DAO development',
+    'soluzioni fintech',
+    'marketing digitale',
+    'sviluppo software',
+    'web3',
+    'blockchain',
+    'AI generativa',
+    'custom development',
+    'business solutions',
+    'digital transformation',
+    'startup solutions',
+    'PMI digitali',
+  ],
+  authors: [{ name: 'Metis Srl' }],
+  creator: 'Metis Srl',
+  publisher: 'Metis Srl',
+  formatDetection: {
+    telephone: true,
+    email: true,
+    address: true,
+  },
   alternates: {
     canonical: '/',
+    languages: {
+      'it-IT': '/',
+      'en-US': '/',
+    },
   },
   robots: {
     index: true,
     follow: true,
+    nocache: false,
     googleBot: {
       index: true,
       follow: true,
       'max-image-preview': 'large',
       'max-snippet': -1,
       'max-video-preview': -1,
+      noimageindex: false,
     },
+  },
+  verification: {
+    google: 'google9c46e0226f3e7206',
   },
   openGraph: {
     type: 'website',
@@ -62,6 +101,16 @@ export const metadata: Metadata = {
     ],
     apple: [{ url: '/apple-touch-icon.png?v=metis-2026-01-14', type: 'image/png', sizes: '180x180' }],
   },
+  manifest: '/manifest.json',
+  themeColor: '#dde0e3',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Metis Srl',
+  },
+  other: {
+    'mobile-web-app-capable': 'yes',
+  },
 }
 
 export default function RootLayout({
@@ -71,17 +120,79 @@ export default function RootLayout({
 }) {
   const organizationJsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'Organization',
+    '@type': ['Organization', 'LocalBusiness', 'ProfessionalService'],
     name: 'Metis Srl',
+    alternateName: 'Metis Tech',
     url: siteUrl,
     logo: `${siteUrl}/solo%20logo%20trasparente.webp`,
+    image: `${siteUrl}/og.png`,
+    description: 'Soluzioni IT innovative: e-commerce, AI, automazioni, ERP, DeFi e consulenza per PMI e startup',
+    foundingDate: '2020',
+    address: {
+      '@type': 'PostalAddress',
+      addressCountry: 'IT',
+      addressLocality: 'Italia',
+    },
     contactPoint: [
       {
         '@type': 'ContactPoint',
         telephone: '+39 370 360 3909',
         contactType: 'sales',
         email: 'info@metis-tech.it',
-        availableLanguage: ['it', 'en'],
+        availableLanguage: ['Italian', 'English'],
+        areaServed: ['IT', 'EU'],
+      },
+      {
+        '@type': 'ContactPoint',
+        telephone: '+39 370 360 3909',
+        contactType: 'customer service',
+        email: 'info@metis-tech.it',
+        availableLanguage: ['Italian', 'English'],
+      },
+    ],
+    sameAs: [
+      'https://www.linkedin.com/company/metis-srl',
+    ],
+    serviceType: [
+      'E-commerce Development',
+      'AI Chatbots',
+      'Business Automation',
+      'ERP Systems',
+      'DeFi Solutions',
+      'Digital Consulting',
+      'Fintech Solutions',
+      'Asset Tokenization',
+    ],
+    areaServed: {
+      '@type': 'Country',
+      name: 'Italy',
+    },
+    priceRange: '€€€',
+  }
+
+  const websiteJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Metis Srl',
+    url: siteUrl,
+    description: 'Soluzioni IT innovative per aziende moderne',
+    inLanguage: ['it-IT', 'en-US'],
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: `${siteUrl}/?s={search_term_string}`,
+      'query-input': 'required name=search_term_string',
+    },
+  }
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: siteUrl,
       },
     ],
   }
@@ -100,6 +211,16 @@ export default function RootLayout({
           type="application/ld+json"
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
         />
       </body>
     </html>
