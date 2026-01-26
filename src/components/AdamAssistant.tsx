@@ -87,6 +87,13 @@ const knowledgeBase = [
 function getReply(input: string) {
   const text = input.toLowerCase()
 
+  const mentionsEcommerce = ['ecommerce', 'e-commerce', 'shop', 'vendere online', 'store'].some((k) => text.includes(k))
+  const mentionsAi = ['ai', 'chatbot', 'assistente', 'assistenti', 'intelligenza artificiale'].some((k) => text.includes(k))
+
+  if (mentionsEcommerce && mentionsAi) {
+    return 'Per vendita online + assistente 24/7 ti consiglio due servizi insieme: 1) “Soluzioni e-commerce personalizzata” per UX/checkout + integrazioni, 2) “AI Assistenti” per chatbot/hand-off umano. Posso aprirti la sezione Servizi e mostrarti entrambe le card?'
+  }
+
   const matched = knowledgeBase.find((topic) =>
     topic.keywords.some((keyword) => text.includes(keyword))
   )
@@ -228,44 +235,44 @@ export default function AdamAssistant() {
       )}
 
       {open && (
-        <div className="fixed right-4 bottom-24 z-[70] w-[min(92vw,390px)] rounded-[28px] border border-white/15 bg-gradient-to-br from-[#0b1220]/95 via-[#111827]/95 to-[#0f172a]/95 text-white shadow-[0_24px_80px_rgba(15,23,42,0.65)] backdrop-blur-xl overflow-hidden">
+        <div className="fixed right-4 bottom-24 z-[70] w-[min(92vw,390px)] max-h-[78vh] rounded-[28px] border border-white/15 bg-gradient-to-br from-[#0b1220]/95 via-[#111827]/95 to-[#0f172a]/95 text-white shadow-[0_24px_80px_rgba(15,23,42,0.65)] backdrop-blur-xl overflow-hidden flex flex-col">
           <div className="absolute -top-24 -right-24 h-56 w-56 rounded-full bg-cyan-500/20 blur-3xl" aria-hidden="true" />
           <div className="absolute -bottom-28 -left-24 h-64 w-64 rounded-full bg-fuchsia-500/15 blur-3xl" aria-hidden="true" />
-          <div className="relative px-5 py-4 border-b border-white/10 flex items-center justify-between">
+          <div className="relative px-5 py-4 border-b border-white/10 flex items-center justify-between sticky top-0 bg-[#0b1220]/90 backdrop-blur-xl">
             <div className="flex items-center gap-3">
               <div className="relative h-12 w-12">
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-cyan-400/70 via-fuchsia-500/60 to-amber-300/40 blur-xl opacity-70" aria-hidden="true" />
-                <div className="relative h-12 w-12 rounded-2xl bg-gradient-to-br from-cyan-400 via-fuchsia-500 to-indigo-500 p-[2px] shadow-[0_12px_40px_rgba(56,189,248,0.35)]">
-                  <div className="h-full w-full rounded-[14px] bg-[#0b1220] flex items-center justify-center">
-                    <span className="text-sm font-semibold tracking-[0.25em] text-white">A</span>
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/70 via-fuchsia-500/60 to-amber-300/40 blur-xl opacity-80" aria-hidden="true" />
+                <div className="relative h-12 w-12 rounded-full bg-gradient-to-br from-cyan-400 via-fuchsia-500 to-indigo-500 p-[2px] shadow-[0_12px_40px_rgba(56,189,248,0.35)]">
+                  <div className="h-full w-full rounded-full bg-[#0b1220] flex items-center justify-center text-lg">
+                    <span className="animate-pulse">🙂</span>
                   </div>
                 </div>
                 <span className="absolute -right-1 -bottom-1 h-4 w-4 rounded-full bg-emerald-400 border border-[#0b1220] shadow" title="Online" />
               </div>
               <div>
-                <p className="text-xs uppercase tracking-[0.25em] text-white/50">Assistente 24/7</p>
-                <h3 className="text-lg font-semibold">ADAM</h3>
+                <h3 className="text-lg font-semibold leading-tight">ADAM</h3>
+                <p className="text-[11px] uppercase tracking-[0.22em] text-white/60">Assistente 24/7</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="text-xs text-white/60 hover:text-white"
+                className="text-xs text-white/70 hover:text-white"
               >
                 Minimizza
               </button>
               <button
                 type="button"
                 onClick={disableAssistant}
-                className="text-xs text-white/60 hover:text-white"
+                className="text-xs text-white/70 hover:text-white"
               >
-                Disattiva ADAM
+                Disattiva
               </button>
             </div>
           </div>
 
-          <div className="px-5 py-4 max-h-[320px] overflow-y-auto space-y-3 text-sm">
+          <div className="px-5 py-4 space-y-3 text-sm flex-1 overflow-y-auto">
             {messages.length === 0 ? (
               <div className="space-y-3 text-white/80">
                 <p>{welcomeMessage}</p>
@@ -286,7 +293,7 @@ export default function AdamAssistant() {
             <div ref={bottomRef} />
           </div>
 
-          <div className="px-5 pb-4 space-y-3">
+          <div className="px-5 pb-4 space-y-3 border-t border-white/10 bg-[#0b1220]/85">
             <div className="flex flex-wrap gap-2">
               {quickActions.map((action) => (
                 <button
