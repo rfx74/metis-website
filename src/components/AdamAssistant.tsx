@@ -13,7 +13,7 @@ type Message = {
   text: string
 }
 
-const welcomeMessage = `Ciao! Sono ADAM, il tuo assistente 24/7. Ti spiego i servizi Metis (e-commerce, AI, ERP/automazioni, design, marketing, IoT), il metodo in 4 step e ti porto alle sezioni giuste. Se vuoi disattivarmi clicca “Disattiva ADAM”.`
+const welcomeMessage = `Ciao! Sono ADAM, il tuo assistente 24/7. Ti spiego i servizi Metis (e-commerce, AI, ERP/automazioni, design, marketing, IoT), il metodo in 4 step e ti porto alle sezioni giuste. Se vuoi disattivarmi clicca "Disattiva ADAM".`
 
 const quickTips = [
   'Cerchi un servizio? Posso consigliarti e portarti alla card corretta.',
@@ -25,37 +25,37 @@ const knowledgeBase = [
   {
     keywords: ['ecommerce', 'e-commerce', 'shop', 'vendere online', 'store'],
     response:
-      'E-commerce su misura: UX + checkout che converte, pagamenti/spedizioni/promo e integrazioni ERP/CRM. Posso portarti alla card “Soluzioni e-commerce personalizzata” nei Servizi.'
+      'E-commerce su misura: UX + checkout che converte, pagamenti/spedizioni/promo e integrazioni ERP/CRM. Posso portarti alla card "Soluzioni e-commerce personalizzata" nei Servizi.'
   },
   {
     keywords: ['ai', 'chatbot', 'intelligenza artificiale', 'assistente', 'assistenti'],
     response:
-      'AI & chatbot: risposte su FAQ/catalogo, copilot per offerte/email, triage ticket con handoff umano. Vuoi vedere la card “AI Assistenti” o un esempio pratico?'
+      'AI & chatbot: risposte su FAQ/catalogo, copilot per offerte/email, triage ticket con handoff umano. Vuoi vedere la card "AI Assistenti" o un esempio pratico?'
   },
   {
     keywords: ['erp', 'automazioni', 'processi', 'magazzino', 'flussi'],
     response:
-      'ERP + automazioni: ordini→magazzino→fatture, ruoli/permessi, integrazioni tra reparti e report. Ti porto alla card “ERP & Automazioni”?'
+      'ERP + automazioni: ordini→magazzino→fatture, ruoli/permessi, integrazioni tra reparti e report. Ti porto alla card "ERP & Automazioni"?'
   },
   {
     keywords: ['ux', 'ui', 'design', 'interfaccia', 'prototipo'],
     response:
-      'UI/UX & product design: flow + prototipo cliccabile, design system e handoff pulito a sviluppo. Vuoi aprire la card “UI/UX + Responsive Design”?'
+      'UI/UX & product design: flow + prototipo cliccabile, design system e handoff pulito a sviluppo. Vuoi aprire la card "UI/UX + Responsive Design"?'
   },
   {
     keywords: ['marketing', 'seo', 'ads', 'meta', 'google'],
     response:
-      'Marketing: SEO + Ads, landing con CRO, tracking pulito (pixel/eventi/UTM) e nurturing. Posso portarti alla card “Marketing”.'
+      'Marketing: SEO + Ads, landing con CRO, tracking pulito (pixel/eventi/UTM) e nurturing. Posso portarti alla card "Marketing".'
   },
   {
     keywords: ['consulenza', 'call', 'ora', '1h', 'review'],
     response:
-      '1H Consulting: una call mirata per roadmap, priorità e decisioni rapide con piano d’azione chiaro. Vuoi prenotarla da Contatti?'
+      '1H Consulting: una call mirata per roadmap, priorità e decisioni rapide con piano d\'azione chiaro. Vuoi prenotarla da Contatti?'
   },
   {
     keywords: ['iot', 'device', 'sensor', 'sensore'],
     response:
-      'IoT su misura: backend/API, device management, sicurezza, dati real‑time e alert pronti per dashboard/automazioni. Ti porto alla card “Soluzioni IoT personalizzate”?'
+      'IoT su misura: backend/API, device management, sicurezza, dati real‑time e alert pronti per dashboard/automazioni. Ti porto alla card "Soluzioni IoT personalizzate"?'
   },
   {
     keywords: ['defi', 'token', 'tokenizzazione', 'web3'],
@@ -87,34 +87,33 @@ const knowledgeBase = [
 function getReply(input: string) {
   const text = input.toLowerCase()
 
-  const serviceMatches: { name: string; label: string }[] = []
+  const serviceMatches: { name: string; label: string; desc: string }[] = []
 
   if (['ecommerce', 'e-commerce', 'shop', 'vendere online', 'store'].some((k) => text.includes(k))) {
-    serviceMatches.push({ name: 'ecommerce', label: '"Soluzioni e-commerce personalizzata"' })
+    serviceMatches.push({ name: 'ecommerce', label: 'Soluzioni e-commerce personalizzata', desc: 'UX + checkout che converte, pagamenti, spedizioni, integrazioni ERP/CRM.' })
   }
   if (['ai', 'chatbot', 'intelligenza artificiale', 'assistente', 'assistenti'].some((k) => text.includes(k))) {
-    serviceMatches.push({ name: 'ai', label: '"AI Assistenti"' })
+    serviceMatches.push({ name: 'ai', label: 'AI Assistenti', desc: 'Chatbot 24/7 su FAQ/catalogo, copilot per offerte/email, triage ticket.' })
   }
   if (['erp', 'automazioni', 'processi', 'magazzino', 'flussi'].some((k) => text.includes(k))) {
-    serviceMatches.push({ name: 'erp', label: '"ERP & Automazioni"' })
+    serviceMatches.push({ name: 'erp', label: 'ERP & Automazioni', desc: 'Ordini→magazzino→fatture, ruoli/permessi, integrazioni tra reparti.' })
   }
   if (['ux', 'ui', 'design', 'interfaccia', 'prototipo'].some((k) => text.includes(k))) {
-    serviceMatches.push({ name: 'design', label: '"UI/UX + Responsive Design"' })
+    serviceMatches.push({ name: 'design', label: 'UI/UX + Responsive Design', desc: 'Flow + prototipo cliccabile, design system, handoff a sviluppo.' })
   }
   if (['marketing', 'seo', 'ads', 'meta', 'google'].some((k) => text.includes(k))) {
-    serviceMatches.push({ name: 'marketing', label: '"Marketing"' })
+    serviceMatches.push({ name: 'marketing', label: 'Marketing', desc: 'SEO + Ads, landing con CRO, tracking pulito, lead nurturing.' })
   }
   if (['iot', 'device', 'sensor', 'sensore'].some((k) => text.includes(k))) {
-    serviceMatches.push({ name: 'iot', label: '"IoT personalizzate"' })
+    serviceMatches.push({ name: 'iot', label: 'IoT personalizzate', desc: 'Backend/API, device management, dati real-time, alert.' })
   }
   if (['consulenza', 'call', 'ora', '1h', 'review'].some((k) => text.includes(k))) {
-    serviceMatches.push({ name: 'consulting', label: '"1H Consulting"' })
+    serviceMatches.push({ name: 'consulting', label: '1H Consulting', desc: 'Una call mirata per roadmap, priorità e decisioni rapide.' })
   }
 
   if (serviceMatches.length >= 2) {
-    const list = serviceMatches.map((s, i) => `${i + 1}) ${s.label}`).join(' ')
-    const suffix = serviceMatches.length === 2 ? 'Posso aprirti la sezione Servizi e mostrarti entrambe le card?' : `Posso portarti alla sezione Servizi per scegliere il combo giusto?`
-    return `Ti consiglio questi ${serviceMatches.length} servizi insieme: ${list}. ${suffix}`
+    const list = serviceMatches.map((s, i) => `${i + 1}) ${s.label}\n   ${s.desc}`).join('\n')
+    return `Perfetto! Ti consiglio questi ${serviceMatches.length} servizi insieme:\n\n${list}\n\nVuoi che ti apra la sezione Servizi?`
   }
 
   const matched = knowledgeBase.find((topic) =>
@@ -122,11 +121,11 @@ function getReply(input: string) {
   )
   if (matched) return matched.response
 
-  if (text.includes('servizio') || text.includes('servizi') || text.includes('cosa fate')) {
-    return 'Panoramica rapida: e-commerce su misura, AI/chatbot, ERP & automazioni, UI/UX design, marketing, IoT e consulenza 1H. Dimmi l’area che ti interessa e ti porto alla card o ti spiego come lavoriamo su quel tema.'
+  if (text.includes('suggeriscimi') || text.includes('consigliami') || text.includes('quali sono') || text.includes('che cosa') || text.includes('servizio') || text.includes('servizi')) {
+    return `Ecco i 7 servizi Metis:\n\n1) E-commerce: UX+checkout, pagamenti, integrazioni\n2) AI Assistenti: Chatbot 24/7 su FAQ/catalogo\n3) ERP & Automazioni: Processi end-to-end\n4) UI/UX Design: Prototipi e design system\n5) Marketing: SEO+Ads, landing, tracking\n6) IoT: Backend, device management, dati real-time\n7) 1H Consulting: Review e roadmap\n\nCerchi uno in particolare?`
   }
 
-  return 'Posso fare tre cose rapide: 1) suggerirti il servizio giusto (e-commerce, AI, ERP/automazioni, marketing, UI/UX, IoT), 2) riassumerti il Metodo in 4 step, 3) aprirti Contatti o WhatsApp per un preventivo in 24h. Cosa vuoi che faccia adesso?'
+  return 'Dimmi quale servizio cerchi (e-commerce, AI, ERP, design, marketing, IoT) o una domanda specifica. Sono qui per aiutarti! 🤖'
 }
 
 export default function AdamAssistant() {
@@ -312,7 +311,7 @@ export default function AdamAssistant() {
             </div>
           </div>
 
-          <div className="px-5 py-4 space-y-3 text-sm flex-1 min-h-0 overflow-y-auto">
+          <div className="px-5 py-4 space-y-3 text-sm flex-1 min-h-0 overflow-y-auto whitespace-pre-wrap">
             {messages.length === 0 ? (
               <div className="space-y-3 text-white/80">
                 <p>{welcomeMessage}</p>
