@@ -68,7 +68,9 @@ export default function CookieConsent() {
                     Usiamo cookie tecnici necessari e, solo con il tuo consenso, cookie di analisi per migliorare l’esperienza. Puoi modificare le preferenze in qualsiasi momento.
                   </p>
                   <div className="text-xs text-white/70">
-                    Consulta la <a href="/privacy" className="underline underline-offset-4 hover:text-white">Privacy Policy</a> per dettagli.
+                    Consulta la <a href="/privacy" className="underline underline-offset-4 hover:text-white">Privacy Policy</a> o la
+                    {' '}
+                    <a href="/cookie-preferences" className="underline underline-offset-4 hover:text-white">pagina preferenze cookie</a>.
                   </div>
                 </div>
               </div>
