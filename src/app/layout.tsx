@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { LanguageProvider } from '@/lib/LanguageContext'
 import Footer from '@/components/Footer'
+import CookieConsent from '@/components/CookieConsent'
+import AnalyticsManager from '@/components/AnalyticsManager'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -211,6 +213,8 @@ export default function RootLayout({
             <div className="flex-1">{children}</div>
             <Footer />
           </div>
+          <CookieConsent />
+          <AnalyticsManager />
         </LanguageProvider>
 
         <script

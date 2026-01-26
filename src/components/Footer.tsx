@@ -60,7 +60,25 @@ export default function Footer() {
 
           <div className="mt-10 h-px bg-black/10" />
 
-          <div className="mt-6 text-center text-gray-600 text-sm">© {year} Metis Srl</div>
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3 text-sm text-gray-600">
+            <span>© {year} Metis Srl</span>
+            <span className="hidden sm:inline">•</span>
+            <a className="hover:text-gray-900 transition-colors" href="/privacy">
+              Privacy Policy
+            </a>
+            <span className="hidden sm:inline">•</span>
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  window.dispatchEvent(new Event('metis-open-consent'))
+                }
+              }}
+              className="underline underline-offset-4 hover:text-gray-900"
+            >
+              Preferenze cookie
+            </button>
+          </div>
         </div>
       </div>
     </footer>
