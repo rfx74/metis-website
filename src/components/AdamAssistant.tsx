@@ -13,46 +13,90 @@ type Message = {
   text: string
 }
 
-const welcomeMessage = `Ciao! Sono ADAM, il tuo assistente 24/7. Posso aiutarti a capire i servizi Metis e suggerirti dove cliccare (card, sezioni, metodo). Se vuoi disattivarmi, usa il pulsante “Disattiva ADAM” qui sotto: sparirò e non sarò invasivo.`
+const welcomeMessage = `Ciao! Sono ADAM, il tuo assistente 24/7. Ti spiego i servizi Metis (e-commerce, AI, ERP/automazioni, design, marketing, IoT), il metodo in 4 step e ti porto alle sezioni giuste. Se vuoi disattivarmi clicca “Disattiva ADAM”.`
 
 const quickTips = [
-  'Vuoi una panoramica rapida dei servizi?',
-  'Posso guidarti nelle card “Servizi” o “Metodo”.',
-  'Se cerchi un preventivo, ti dico come contattarci subito.'
+  'Cerchi un servizio? Posso consigliarti e portarti alla card corretta.',
+  'Vuoi capire il Metodo Metis in 4 step? Te lo riassumo e ti ci porto.',
+  'Se ti serve un preventivo rapido ti dico come contattarci subito (email o WhatsApp).'
+]
+
+const knowledgeBase = [
+  {
+    keywords: ['ecommerce', 'e-commerce', 'shop', 'vendere online', 'store'],
+    response:
+      'E-commerce su misura: UX + checkout che converte, pagamenti/spedizioni/promo e integrazioni ERP/CRM. Posso portarti alla card “Soluzioni e-commerce personalizzata” nei Servizi.'
+  },
+  {
+    keywords: ['ai', 'chatbot', 'intelligenza artificiale', 'assistente', 'assistenti'],
+    response:
+      'AI & chatbot: risposte su FAQ/catalogo, copilot per offerte/email, triage ticket con handoff umano. Vuoi vedere la card “AI Assistenti” o un esempio pratico?'
+  },
+  {
+    keywords: ['erp', 'automazioni', 'processi', 'magazzino', 'flussi'],
+    response:
+      'ERP + automazioni: ordini→magazzino→fatture, ruoli/permessi, integrazioni tra reparti e report. Ti porto alla card “ERP & Automazioni”?'
+  },
+  {
+    keywords: ['ux', 'ui', 'design', 'interfaccia', 'prototipo'],
+    response:
+      'UI/UX & product design: flow + prototipo cliccabile, design system e handoff pulito a sviluppo. Vuoi aprire la card “UI/UX + Responsive Design”?'
+  },
+  {
+    keywords: ['marketing', 'seo', 'ads', 'meta', 'google'],
+    response:
+      'Marketing: SEO + Ads, landing con CRO, tracking pulito (pixel/eventi/UTM) e nurturing. Posso portarti alla card “Marketing”.'
+  },
+  {
+    keywords: ['consulenza', 'call', 'ora', '1h', 'review'],
+    response:
+      '1H Consulting: una call mirata per roadmap, priorità e decisioni rapide con piano d’azione chiaro. Vuoi prenotarla da Contatti?'
+  },
+  {
+    keywords: ['iot', 'device', 'sensor', 'sensore'],
+    response:
+      'IoT su misura: backend/API, device management, sicurezza, dati real‑time e alert pronti per dashboard/automazioni. Ti porto alla card “Soluzioni IoT personalizzate”?'
+  },
+  {
+    keywords: ['defi', 'token', 'tokenizzazione', 'web3'],
+    response:
+      'DeFi e tokenizzazione: architetture compliant per asset reali e integrazione web3 nel business. Vuoi parlarne ora?'
+  },
+  {
+    keywords: ['metodo', 'processo', 'portfolio', 'come lavorate', 'step'],
+    response:
+      'Metodo Metis in 4 step: 1) Analisi strategica, 2) Architettura, 3) Sviluppo agile, 4) Rilascio e miglioramento. Posso portarti alla sezione Metodo per i dettagli.'
+  },
+  {
+    keywords: ['preventivo', 'prezzo', 'costo', 'quanto'],
+    response:
+      'Per un preventivo rapido: scrivici da Contatti (email) oppure clicca WhatsApp in basso a destra. Rispondiamo entro 24h con priorità + stima.'
+  },
+  {
+    keywords: ['contatto', 'contattare', 'whatsapp', 'telefono', 'chiamare'],
+    response:
+      'Puoi scriverci dal form Contatti o su WhatsApp Business (risposta entro 24h). Vuoi che ti apra la sezione Contatti?'
+  },
+  {
+    keywords: ['privacy', 'cookie', 'gdpr'],
+    response:
+      'Privacy e cookie: trovi Privacy Policy e Preferenze cookie nel footer. Posso aprirti subito la pagina dedicata.'
+  }
 ]
 
 function getReply(input: string) {
   const text = input.toLowerCase()
 
-  if (text.includes('prezzo') || text.includes('preventivo') || text.includes('costo')) {
-    return 'Per un preventivo veloce: vai su “Contatti” e scrivici due righe, oppure clicca WhatsApp. Ti rispondiamo entro 24h.'
-  }
-  if (text.includes('ecommerce') || text.includes('e-commerce')) {
-    return 'E-commerce su misura: UX + checkout che converte, pagamenti, spedizioni, promo e integrazioni ERP/CRM. Vuoi che ti porti alla card E-commerce nei Servizi?'
-  }
-  if (text.includes('chatbot') || text.includes('ai') || text.includes('intelligenza artificiale')) {
-    return 'AI & Chatbot: assistenti conversazionali, automazioni e AI generativa su processi reali. Vuoi vedere la card “AI Assistenti”?' 
-  }
-  if (text.includes('erp') || text.includes('automazioni') || text.includes('processi')) {
-    return 'ERP & Automazioni: integriamo processi end‑to‑end per ridurre tempi e errori. Ti porto alla card “ERP & Automazioni”?'
-  }
-  if (text.includes('defi') || text.includes('tokenizzazione') || text.includes('web3')) {
-    return 'Soluzioni DeFi e tokenizzazione: progettiamo architetture compliant per asset reali e servizi web3 integrati nel business.'
-  }
-  if (text.includes('metodo') || text.includes('step')) {
-    return 'Il Metodo Metis è in 4 step: Analisi, Architettura, Sviluppo Agile, Rilascio. Vuoi che ti porti alla sezione Metodo?'
-  }
-  if (text.includes('logo') || text.includes('giochino') || text.includes('easter')) {
-    return 'Se vuoi, posso aggiungere un mini‑gioco discreto sul logo. Dimmi se lo vuoi attivare e lo preparo.'
-  }
-  if (text.includes('privacy') || text.includes('cookie')) {
-    return 'La Privacy Policy è disponibile in fondo alla pagina. Per i cookie puoi aprire “Preferenze cookie”.'
-  }
-  if (text.includes('contatto') || text.includes('contattare') || text.includes('whatsapp')) {
-    return 'Ti conviene usare il pulsante “Contatti” o WhatsApp in basso a destra: rispondiamo in 24h.'
+  const matched = knowledgeBase.find((topic) =>
+    topic.keywords.some((keyword) => text.includes(keyword))
+  )
+  if (matched) return matched.response
+
+  if (text.includes('servizio') || text.includes('servizi') || text.includes('cosa fate')) {
+    return 'Panoramica rapida: e-commerce su misura, AI/chatbot, ERP & automazioni, UI/UX design, marketing, IoT e consulenza 1H. Dimmi l’area che ti interessa e ti porto alla card o ti spiego come lavoriamo su quel tema.'
   }
 
-  return 'Posso aiutarti su servizi, metodo, contatti o privacy. Dimmi cosa ti interessa e ti guido nella sezione giusta.'
+  return 'Posso fare tre cose rapide: 1) suggerirti il servizio giusto (e-commerce, AI, ERP/automazioni, marketing, UI/UX, IoT), 2) riassumerti il Metodo in 4 step, 3) aprirti Contatti o WhatsApp per un preventivo in 24h. Cosa vuoi che faccia adesso?'
 }
 
 export default function AdamAssistant() {
@@ -140,6 +184,7 @@ export default function AdamAssistant() {
     () => [
       { label: 'Vai ai Servizi', target: 'services' },
       { label: 'Metodo Metis', target: 'method' },
+      { label: 'Chi siamo', target: 'about' },
       { label: 'Contatti', target: 'contact' },
     ],
     []
@@ -166,14 +211,19 @@ export default function AdamAssistant() {
       {!open && (
         <button
           type="button"
-          className="hidden sm:flex fixed right-4 bottom-24 z-[60] items-center gap-2 rounded-full border border-white/15 bg-gradient-to-r from-cyan-500/30 to-fuchsia-500/20 px-4 py-2 text-xs text-white/90 backdrop-blur-lg shadow-[0_12px_40px_rgba(56,189,248,0.25)] hover:brightness-110 transition-all"
+          className="flex fixed right-4 bottom-24 z-[60] items-center gap-3 rounded-full border border-white/15 bg-gradient-to-r from-cyan-500/30 to-fuchsia-500/20 px-3.5 py-2 text-xs text-white/90 backdrop-blur-lg shadow-[0_12px_40px_rgba(56,189,248,0.25)] hover:brightness-110 transition-all"
           onClick={() => setOpen(true)}
         >
-          <span className="relative h-2 w-2">
-            <span className="absolute inset-0 rounded-full bg-emerald-400 animate-ping" />
-            <span className="absolute inset-0 rounded-full bg-emerald-400" />
+          <span className="relative h-9 w-9 rounded-2xl bg-gradient-to-br from-cyan-400 via-fuchsia-500 to-indigo-500 p-[2px] shadow-[0_10px_30px_rgba(56,189,248,0.35)]">
+            <span className="absolute -right-[6px] -bottom-[6px] h-3.5 w-3.5 rounded-full bg-emerald-400 border border-[#0b1220] shadow" title="Online" />
+            <span className="relative flex h-full w-full items-center justify-center rounded-[14px] bg-[#0b1220] text-sm font-semibold tracking-[0.22em] text-white">
+              A
+            </span>
           </span>
-          ADAM 24/7
+          <div className="flex flex-col items-start leading-tight">
+            <span className="text-[11px] uppercase tracking-[0.22em] text-white/60">Assistente</span>
+            <span className="text-sm font-semibold text-white">ADAM 24/7</span>
+          </div>
         </button>
       )}
 
