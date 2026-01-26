@@ -5,6 +5,7 @@ import { LanguageProvider } from '@/lib/LanguageContext'
 import Footer from '@/components/Footer'
 import CookieConsent from '@/components/CookieConsent'
 import AnalyticsManager from '@/components/AnalyticsManager'
+import AdamAssistant from '@/components/AdamAssistant'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -215,6 +216,7 @@ export default function RootLayout({
           </div>
           <CookieConsent />
           <AnalyticsManager />
+          <AdamAssistant />
         </LanguageProvider>
 
         <script

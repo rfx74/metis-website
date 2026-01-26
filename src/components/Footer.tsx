@@ -78,6 +78,18 @@ export default function Footer() {
             >
               Preferenze cookie
             </button>
+            <span className="hidden sm:inline">•</span>
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  window.dispatchEvent(new Event('metis-open-adam'))
+                }
+              }}
+              className="underline underline-offset-4 hover:text-gray-900"
+            >
+              Apri ADAM
+            </button>
           </div>
         </div>
       </div>
