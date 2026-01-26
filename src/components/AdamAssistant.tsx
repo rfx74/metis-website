@@ -166,20 +166,36 @@ export default function AdamAssistant() {
       {!open && (
         <button
           type="button"
-          className="hidden sm:flex fixed right-4 bottom-24 z-[60] items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs text-white/80 backdrop-blur-lg shadow-lg hover:text-white hover:bg-white/20 transition-all"
+          className="hidden sm:flex fixed right-4 bottom-24 z-[60] items-center gap-2 rounded-full border border-white/15 bg-gradient-to-r from-cyan-500/30 to-fuchsia-500/20 px-4 py-2 text-xs text-white/90 backdrop-blur-lg shadow-[0_12px_40px_rgba(56,189,248,0.25)] hover:brightness-110 transition-all"
           onClick={() => setOpen(true)}
         >
-          <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="relative h-2 w-2">
+            <span className="absolute inset-0 rounded-full bg-emerald-400 animate-ping" />
+            <span className="absolute inset-0 rounded-full bg-emerald-400" />
+          </span>
           ADAM 24/7
         </button>
       )}
 
       {open && (
-        <div className="fixed right-4 bottom-24 z-[70] w-[min(92vw,380px)] rounded-3xl border border-white/15 bg-gradient-to-br from-[#0b1220]/95 via-[#111827]/95 to-[#0f172a]/95 text-white shadow-2xl backdrop-blur-xl">
-          <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between">
-            <div>
-              <p className="text-sm text-white/70">Assistente 24/7</p>
-              <h3 className="text-lg font-semibold">ADAM</h3>
+        <div className="fixed right-4 bottom-24 z-[70] w-[min(92vw,390px)] rounded-[28px] border border-white/15 bg-gradient-to-br from-[#0b1220]/95 via-[#111827]/95 to-[#0f172a]/95 text-white shadow-[0_24px_80px_rgba(15,23,42,0.65)] backdrop-blur-xl overflow-hidden">
+          <div className="absolute -top-24 -right-24 h-56 w-56 rounded-full bg-cyan-500/20 blur-3xl" aria-hidden="true" />
+          <div className="absolute -bottom-28 -left-24 h-64 w-64 rounded-full bg-fuchsia-500/15 blur-3xl" aria-hidden="true" />
+          <div className="relative px-5 py-4 border-b border-white/10 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="relative h-12 w-12">
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-cyan-400/70 via-fuchsia-500/60 to-amber-300/40 blur-xl opacity-70" aria-hidden="true" />
+                <div className="relative h-12 w-12 rounded-2xl bg-gradient-to-br from-cyan-400 via-fuchsia-500 to-indigo-500 p-[2px] shadow-[0_12px_40px_rgba(56,189,248,0.35)]">
+                  <div className="h-full w-full rounded-[14px] bg-[#0b1220] flex items-center justify-center">
+                    <span className="text-sm font-semibold tracking-[0.25em] text-white">A</span>
+                  </div>
+                </div>
+                <span className="absolute -right-1 -bottom-1 h-4 w-4 rounded-full bg-emerald-400 border border-[#0b1220] shadow" title="Online" />
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-[0.25em] text-white/50">Assistente 24/7</p>
+                <h3 className="text-lg font-semibold">ADAM</h3>
+              </div>
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -211,7 +227,7 @@ export default function AdamAssistant() {
               messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`rounded-2xl px-3 py-2 ${message.from === 'adam' ? 'bg-white/10 text-white' : 'bg-cyan-500/20 text-white text-right'}`}
+                  className={`rounded-2xl px-3 py-2 shadow-sm ${message.from === 'adam' ? 'bg-white/10 text-white border border-white/10' : 'bg-gradient-to-r from-cyan-500/30 to-fuchsia-500/20 text-white text-right'}`}
                 >
                   {message.text}
                 </div>
@@ -227,7 +243,7 @@ export default function AdamAssistant() {
                   key={action.target}
                   type="button"
                   onClick={() => scrollToSection(action.target)}
-                  className="rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+                  className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-white/80 hover:text-white hover:bg-white/10 transition-colors"
                 >
                   {action.label}
                 </button>
@@ -247,7 +263,7 @@ export default function AdamAssistant() {
               <button
                 type="button"
                 onClick={sendMessage}
-                className="rounded-xl bg-gradient-to-r from-cyan-400 to-fuchsia-500 px-4 py-2 text-sm font-semibold text-slate-900"
+                className="rounded-xl bg-gradient-to-r from-cyan-400 to-fuchsia-500 px-4 py-2 text-sm font-semibold text-slate-900 shadow-md hover:brightness-110 transition-all"
               >
                 Invia
               </button>
