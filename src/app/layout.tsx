@@ -68,6 +68,9 @@ export const metadata: Metadata = {
   },
   verification: {
     google: 'google9c46e0226f3e7206',
+    other: {
+      'msvalidate.01': 'A783E3D2E150CE989DAFE6E93694A68A',
+    },
   },
   openGraph: {
     type: 'website',
