@@ -62,6 +62,11 @@ export default function AdamAssistant() {
   const [input, setInput] = useState('')
   const [seen, setSeen] = useState(false)
   const bottomRef = useRef<HTMLDivElement | null>(null)
+  const messagesRef = useRef<Message[]>([])
+
+  useEffect(() => {
+    messagesRef.current = messages
+  }, [messages])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -95,7 +100,7 @@ export default function AdamAssistant() {
       }
       setDisabled(false)
       setOpen(true)
-      if (!messages.length) {
+      if (!messagesRef.current.length) {
         setMessages([{ id: 'welcome', from: 'adam', text: welcomeMessage }])
       }
     }

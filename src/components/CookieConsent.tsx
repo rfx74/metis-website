@@ -96,6 +96,7 @@ export default function CookieConsent() {
                         className="sr-only"
                         checked={prefs.analytics}
                         onChange={toggleAnalytics}
+                        aria-label="Abilita cookie analytics"
                       />
                       <span className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors ${prefs.analytics ? 'bg-cyan-400' : 'bg-white/30'}`}>
                         <span className={`bg-white w-4 h-4 rounded-full shadow transition-transform ${prefs.analytics ? 'translate-x-5' : 'translate-x-0'}`} />
