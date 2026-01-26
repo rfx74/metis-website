@@ -87,15 +87,39 @@ const knowledgeBase = [
 function getReply(input: string) {
   const text = input.toLowerCase()
 
+  // Check for explanation requests first
+  if (text.includes('come funziona') || text.includes('spiegami') || text.includes('come lavora') || text.includes('perché')) {
+    if (text.includes('e-commerce') || text.includes('vendere online') || text.includes('shop')) {
+      return `E-commerce: Creiamo siti di vendita con UX che converte, checkout ottimizzato, gestione pagamenti, spedizioni e promo. Si integra col tuo gestionale (ERP) per sincronizzare catalogo, ordini e inventario in tempo reale. ROI: meno errori manali, più vendite.`
+    }
+    if (text.includes('ai') || text.includes('assistente') || text.includes('chatbot')) {
+      return `AI Assistenti: Chatbot 24/7 che risponde ai clienti su FAQ, catalogo, preventivi. Usa AI generativa per suggerire offerte, rispondere email, triaging ticket. Se la domanda è complessa, passa a un umano. Vantaggio: meno carico sul team, clienti happy 24/7.`
+    }
+    if (text.includes('erp') || text.includes('gestionale') || text.includes('contabilità') || text.includes('magazzino')) {
+      return `ERP & Automazioni: Organizziamo processi (ordini→magazzino→fatture→contabilità) in un'unica piattaforma. Ruoli e permessi, approvazioni automatiche, integrazioni con banca/fornitori. Risultato: trasparenza, zero errori, decisioni basate su dati reali.`
+    }
+    return `Posso spiegare ogni servizio. Dimmi quale ti interessa (e-commerce, AI, ERP, design, marketing, IoT) e ti dettaglio come funziona e il perché fa la differenza.`
+  }
+
+  // Detect complex scenarios (e.g., "vendita online + gestionale + assistente")
+  const hasEcommerce = ['ecommerce', 'e-commerce', 'shop', 'vendere online', 'store', 'vendita online'].some((k) => text.includes(k))
+  const hasERP = ['erp', 'gestionale', 'contabilità', 'magazzino', 'processi'].some((k) => text.includes(k))
+  const hasAI = ['ai', 'chatbot', 'assistente', 'intelligenza artificiale'].some((k) => text.includes(k))
+
+  // Smart combo detection for complex requests
+  if ((hasEcommerce && hasERP && hasAI) || (text.includes('integrato') && (hasEcommerce || hasERP) && hasAI)) {
+    return `Perfetto! Per un sito di vendita integrato al gestionale + assistente ti consiglio questa combo:\n\n1) *E-commerce personalizzato*: Sito con UX che vende, checkout sicuro, pagamenti, spedizioni integrate\n2) *ERP & Automazioni*: Il cuore - sincronizza ordini dal sito al gestionale, aggiorna catalogo e inventario in tempo reale\n3) *AI Assistenti*: Chatbot 24/7 che risponde su prodotti, assistenza pre/post-vendita, riduce carico team\n\nCome funziona assieme: Cliente compra → sito invia ordine a ERP → chatbot offre supporto 24/7 → team interno vede tutto sincronizzato.\n\nVuoi che ti apra la sezione Servizi per i dettagli?`
+  }
+
   const serviceMatches: { name: string; label: string; desc: string }[] = []
 
-  if (['ecommerce', 'e-commerce', 'shop', 'vendere online', 'store'].some((k) => text.includes(k))) {
+  if (hasEcommerce) {
     serviceMatches.push({ name: 'ecommerce', label: 'Soluzioni e-commerce personalizzata', desc: 'UX + checkout che converte, pagamenti, spedizioni, integrazioni ERP/CRM.' })
   }
-  if (['ai', 'chatbot', 'intelligenza artificiale', 'assistente', 'assistenti'].some((k) => text.includes(k))) {
+  if (hasAI) {
     serviceMatches.push({ name: 'ai', label: 'AI Assistenti', desc: 'Chatbot 24/7 su FAQ/catalogo, copilot per offerte/email, triage ticket.' })
   }
-  if (['erp', 'automazioni', 'processi', 'magazzino', 'flussi'].some((k) => text.includes(k))) {
+  if (hasERP) {
     serviceMatches.push({ name: 'erp', label: 'ERP & Automazioni', desc: 'Ordini→magazzino→fatture, ruoli/permessi, integrazioni tra reparti.' })
   }
   if (['ux', 'ui', 'design', 'interfaccia', 'prototipo'].some((k) => text.includes(k))) {
@@ -116,6 +140,7 @@ function getReply(input: string) {
     return `Perfetto! Ti consiglio questi ${serviceMatches.length} servizi insieme:\n\n${list}\n\nVuoi che ti apra la sezione Servizi?`
   }
 
+  // Knowledge base for single-service queries
   const matched = knowledgeBase.find((topic) =>
     topic.keywords.some((keyword) => text.includes(keyword))
   )
