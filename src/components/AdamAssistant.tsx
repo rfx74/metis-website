@@ -311,7 +311,7 @@ export default function AdamAssistant() {
             </div>
           </div>
 
-          <div className="px-5 py-4 space-y-3 text-sm flex-1 min-h-0 overflow-y-auto whitespace-pre-wrap">
+          <div className="px-5 py-4 space-y-3 text-sm flex-1 min-h-0 overflow-y-auto">
             {messages.length === 0 ? (
               <div className="space-y-3 text-white/80">
                 <p>{welcomeMessage}</p>
@@ -323,7 +323,7 @@ export default function AdamAssistant() {
               messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`rounded-2xl px-3 py-2 shadow-sm ${message.from === 'adam' ? 'bg-white/10 text-white border border-white/10' : 'bg-gradient-to-r from-cyan-500/30 to-fuchsia-500/20 text-white text-right'}`}
+                  className={`rounded-2xl px-4 py-3 shadow-sm break-words ${message.from === 'adam' ? 'bg-white/10 text-white border border-white/10 whitespace-pre-wrap' : 'bg-gradient-to-r from-cyan-500/30 to-fuchsia-500/20 text-white text-right'}`}
                 >
                   {message.text}
                 </div>
