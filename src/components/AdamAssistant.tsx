@@ -87,11 +87,34 @@ const knowledgeBase = [
 function getReply(input: string) {
   const text = input.toLowerCase()
 
-  const mentionsEcommerce = ['ecommerce', 'e-commerce', 'shop', 'vendere online', 'store'].some((k) => text.includes(k))
-  const mentionsAi = ['ai', 'chatbot', 'assistente', 'assistenti', 'intelligenza artificiale'].some((k) => text.includes(k))
+  const serviceMatches: { name: string; label: string }[] = []
 
-  if (mentionsEcommerce && mentionsAi) {
-    return 'Per vendita online + assistente 24/7 ti consiglio due servizi insieme: 1) “Soluzioni e-commerce personalizzata” per UX/checkout + integrazioni, 2) “AI Assistenti” per chatbot/hand-off umano. Posso aprirti la sezione Servizi e mostrarti entrambe le card?'
+  if (['ecommerce', 'e-commerce', 'shop', 'vendere online', 'store'].some((k) => text.includes(k))) {
+    serviceMatches.push({ name: 'ecommerce', label: '"Soluzioni e-commerce personalizzata"' })
+  }
+  if (['ai', 'chatbot', 'intelligenza artificiale', 'assistente', 'assistenti'].some((k) => text.includes(k))) {
+    serviceMatches.push({ name: 'ai', label: '"AI Assistenti"' })
+  }
+  if (['erp', 'automazioni', 'processi', 'magazzino', 'flussi'].some((k) => text.includes(k))) {
+    serviceMatches.push({ name: 'erp', label: '"ERP & Automazioni"' })
+  }
+  if (['ux', 'ui', 'design', 'interfaccia', 'prototipo'].some((k) => text.includes(k))) {
+    serviceMatches.push({ name: 'design', label: '"UI/UX + Responsive Design"' })
+  }
+  if (['marketing', 'seo', 'ads', 'meta', 'google'].some((k) => text.includes(k))) {
+    serviceMatches.push({ name: 'marketing', label: '"Marketing"' })
+  }
+  if (['iot', 'device', 'sensor', 'sensore'].some((k) => text.includes(k))) {
+    serviceMatches.push({ name: 'iot', label: '"IoT personalizzate"' })
+  }
+  if (['consulenza', 'call', 'ora', '1h', 'review'].some((k) => text.includes(k))) {
+    serviceMatches.push({ name: 'consulting', label: '"1H Consulting"' })
+  }
+
+  if (serviceMatches.length >= 2) {
+    const list = serviceMatches.map((s, i) => `${i + 1}) ${s.label}`).join(' ')
+    const suffix = serviceMatches.length === 2 ? 'Posso aprirti la sezione Servizi e mostrarti entrambe le card?' : `Posso portarti alla sezione Servizi per scegliere il combo giusto?`
+    return `Ti consiglio questi ${serviceMatches.length} servizi insieme: ${list}. ${suffix}`
   }
 
   const matched = knowledgeBase.find((topic) =>
@@ -223,8 +246,16 @@ export default function AdamAssistant() {
         >
           <span className="relative h-9 w-9 rounded-2xl bg-gradient-to-br from-cyan-400 via-fuchsia-500 to-indigo-500 p-[2px] shadow-[0_10px_30px_rgba(56,189,248,0.35)]">
             <span className="absolute -right-[6px] -bottom-[6px] h-3.5 w-3.5 rounded-full bg-emerald-400 border border-[#0b1220] shadow" title="Online" />
-            <span className="relative flex h-full w-full items-center justify-center rounded-[14px] bg-[#0b1220] text-sm font-semibold tracking-[0.22em] text-white">
-              A
+            <span className="relative flex h-full w-full items-center justify-center rounded-[14px] bg-[#0b1220]">
+              <svg className="w-5 h-5 text-cyan-300" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="6" r="1" />
+                <circle cx="9" cy="6" r="1" />
+                <circle cx="15" cy="6" r="1" />
+                <path d="M12 1 L13 4 L11 4 Z" fill="currentColor" />
+                <rect x="7" y="8" width="10" height="6" rx="1" fill="currentColor" opacity="0.7" />
+                <rect x="8" y="10" width="2" height="2" fill="#0b1220" />
+                <rect x="14" y="10" width="2" height="2" fill="#0b1220" />
+              </svg>
             </span>
           </span>
           <div className="flex flex-col items-start leading-tight">
@@ -238,13 +269,22 @@ export default function AdamAssistant() {
         <div className="fixed right-4 bottom-24 z-[70] w-[min(92vw,390px)] max-h-[78vh] rounded-[28px] border border-white/15 bg-gradient-to-br from-[#0b1220]/95 via-[#111827]/95 to-[#0f172a]/95 text-white shadow-[0_24px_80px_rgba(15,23,42,0.65)] backdrop-blur-xl overflow-hidden flex flex-col">
           <div className="absolute -top-24 -right-24 h-56 w-56 rounded-full bg-cyan-500/20 blur-3xl" aria-hidden="true" />
           <div className="absolute -bottom-28 -left-24 h-64 w-64 rounded-full bg-fuchsia-500/15 blur-3xl" aria-hidden="true" />
-          <div className="relative px-5 py-4 border-b border-white/10 flex items-center justify-between sticky top-0 bg-[#0b1220]/90 backdrop-blur-xl">
+          <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between sticky top-0 z-10 bg-[#0b1220]/90 backdrop-blur-xl">
             <div className="flex items-center gap-3">
               <div className="relative h-12 w-12">
                 <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/70 via-fuchsia-500/60 to-amber-300/40 blur-xl opacity-80" aria-hidden="true" />
                 <div className="relative h-12 w-12 rounded-full bg-gradient-to-br from-cyan-400 via-fuchsia-500 to-indigo-500 p-[2px] shadow-[0_12px_40px_rgba(56,189,248,0.35)]">
-                  <div className="h-full w-full rounded-full bg-[#0b1220] flex items-center justify-center text-lg">
-                    <span className="animate-pulse">🙂</span>
+                  <div className="h-full w-full rounded-full bg-[#0b1220] flex items-center justify-center">
+                    <svg className="w-6 h-6 text-cyan-300" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="12" cy="8" r="1.5" />
+                      <circle cx="9" cy="8" r="1.5" />
+                      <circle cx="15" cy="8" r="1.5" />
+                      <path d="M12 2 L14 6 L10 6 Z" fill="currentColor" />
+                      <rect x="7" y="10" width="10" height="7" rx="1" fill="currentColor" opacity="0.7" />
+                      <rect x="8" y="12" width="2" height="3" fill="#0b1220" />
+                      <rect x="14" y="12" width="2" height="3" fill="#0b1220" />
+                      <path d="M9 18 L10 20 M12 18 L12 20 M15 18 L14 20" stroke="currentColor" strokeWidth="1.5" />
+                    </svg>
                   </div>
                 </div>
                 <span className="absolute -right-1 -bottom-1 h-4 w-4 rounded-full bg-emerald-400 border border-[#0b1220] shadow" title="Online" />
@@ -272,7 +312,7 @@ export default function AdamAssistant() {
             </div>
           </div>
 
-          <div className="px-5 py-4 space-y-3 text-sm flex-1 overflow-y-auto">
+          <div className="px-5 py-4 space-y-3 text-sm flex-1 min-h-0 overflow-y-auto">
             {messages.length === 0 ? (
               <div className="space-y-3 text-white/80">
                 <p>{welcomeMessage}</p>
