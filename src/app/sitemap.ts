@@ -4,6 +4,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://metis-tech.it'
   const now = new Date()
 
+  // Only include crawlable URLs. Hash fragments (e.g., #services) are invalid in sitemaps.
   return [
     {
       url: siteUrl,
@@ -16,30 +17,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
           en: siteUrl,
         },
       },
-    },
-    {
-      url: `${siteUrl}/#services`,
-      lastModified: now,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${siteUrl}/#about`,
-      lastModified: now,
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${siteUrl}/#portfolio`,
-      lastModified: now,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${siteUrl}/#contact`,
-      lastModified: now,
-      changeFrequency: 'monthly',
-      priority: 0.7,
     },
   ]
 }

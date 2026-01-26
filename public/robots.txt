@@ -1,32 +1,32 @@
-User-Agent: *
+User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /_next/
 Disallow: /admin/
 Disallow: /private/
 
-User-Agent: Googlebot
+User-agent: Googlebot
 Allow: /
 Disallow: /api/
 Disallow: /_next/
 
-User-Agent: Googlebot-Image
+User-agent: Googlebot-Image
 Allow: /
 
-User-Agent: Bingbot
-Allow: /
-Disallow: /api/
-Disallow: /_next/
-
-User-Agent: Slurp
+User-agent: Bingbot
 Allow: /
 Disallow: /api/
 Disallow: /_next/
 
-User-Agent: DuckDuckBot
+User-agent: Slurp
 Allow: /
 Disallow: /api/
 Disallow: /_next/
 
-Host: https://metis-tech.it
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+
+Host: metis-tech.it
 Sitemap: https://metis-tech.it/sitemap.xml
