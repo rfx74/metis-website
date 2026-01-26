@@ -275,6 +275,8 @@ export default function PortfolioSection() {
                         <img
                           src={currentImage}
                           alt={currentStep?.title ?? 'Method step'}
+                          width={640}
+                          height={480}
                           className="w-full h-auto object-cover rounded-3xl"
                           loading={safeActiveStep === 0 ? 'eager' : 'lazy'}
                         />

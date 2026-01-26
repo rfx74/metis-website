@@ -224,9 +224,10 @@ export default function ServicesSection() {
                         alt={service.imageAlt ?? service.title}
                         width={420}
                         height={420}
+                        sizes="(max-width: 640px) 256px, (max-width: 1024px) 320px, 420px"
                         className="w-64 h-64 sm:w-80 sm:h-80 md:w-[420px] md:h-[420px]"
                         priority={false}
-                        quality={80}
+                        quality={75}
                       />
                     </div>
                   ) : null}
