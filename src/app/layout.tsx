@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     template: '%s | Metis Srl',
   },
   description:
-    'Metis Srl: soluzioni IT innovative per PMI e startup. E-commerce su misura, chatbot AI, intelligenza artificiale generativa, automazioni aziendali, sistemi ERP, tokenizzazione asset e consulenza digitale. Custom e-commerce, AI chatbots, business automation, ERP systems, DeFi solutions & digital consulting.',
+    'Metis Srl: e-commerce su misura, chatbot AI, automazioni e ERP per PMI e startup, con consulenza digitale e soluzioni DeFi.',
   keywords: [
     'e-commerce custom',
     'chatbot AI',
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
     siteName: 'Metis Srl',
     title: 'Metis Srl - Innovative IT Solutions',
     description:
-      'Soluzioni IT su misura: e-commerce, automazioni, AI, ERP e consulenza. Tailored digital solutions for SMEs and startups.',
+      'Metis Srl: e-commerce su misura, chatbot AI, automazioni e ERP per PMI e startup, con consulenza digitale e soluzioni DeFi.',
     images: [
       {
         url: '/og.png',
@@ -93,7 +93,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Metis Srl - Innovative IT Solutions',
     description:
-      'Custom e-commerce, AI, automazioni, ERP e consulenza. We bring structure to your ideas.',
+      'Metis Srl: e-commerce su misura, chatbot AI, automazioni e ERP per PMI e startup, con consulenza digitale e soluzioni DeFi.',
     images: ['/og.png'],
   },
   icons: {

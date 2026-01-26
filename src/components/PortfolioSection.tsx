@@ -151,8 +151,13 @@ export default function PortfolioSection() {
       <div className="container mx-auto px-4 sm:px-6 text-center">
         {/* Preload method images to avoid delayed loads on tab click */}
         <div className="sr-only" aria-hidden="true">
-          {preloadImages.map((src) => (
-            <img key={src} src={src} alt="" loading="eager" />
+          {preloadImages.map((src, idx) => (
+            <img
+              key={src}
+              src={src}
+              alt={steps[idx]?.title ? `${steps[idx]?.title}` : 'Metodo Metis'}
+              loading="eager"
+            />
           ))}
         </div>
 
