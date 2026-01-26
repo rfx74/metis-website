@@ -51,6 +51,10 @@ const nextConfig = {
             value: 'on',
           },
           {
+            key: 'Content-Language',
+            value: 'it-IT',
+          },
+          {
             key: 'X-Frame-Options',
             value: 'SAMEORIGIN',
           },
