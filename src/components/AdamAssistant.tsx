@@ -46,30 +46,30 @@ const copy = {
     webSearch:
       'I do not have real-time web access. I can still answer using the site information and my knowledge. Tell me what you need and I will add practical examples.',
     generalFallback:
-      'Tell me which service you need (e-commerce, AI, ERP, design, marketing, IoT) or a specific question. I am here to help! 🤖'
-  }
-}
+        ? `Ecco tutti i servizi Metis con esempi:
 
-const knowledgeBase = {
-  it: [
-    {
-      keywords: ['ecommerce', 'e-commerce', 'shop', 'vendere online', 'store'],
-      response:
-        'E-commerce su misura: UX + checkout che converte, pagamenti/spedizioni/promo e integrazioni ERP/CRM. Esempio: catalogo sincronizzato con il gestionale, stock in tempo reale e checkout con upsell. Link: /#services. Suggerimento: clicca la card per girarla e vedere i dettagli.'
-    },
-    {
-      keywords: ['ai', 'chatbot', 'intelligenza artificiale', 'assistente', 'assistenti'],
-      response:
-        'AI & chatbot: risposte su FAQ/catalogo, copilot per offerte/email, triage ticket con handoff umano. Esempio: chatbot che risponde su tempi di consegna e apre ticket al team quando serve. Link: /#services. Suggerimento: clicca la card per girarla e vedere i dettagli.'
-    },
-    {
-      keywords: ['erp', 'automazioni', 'processi', 'magazzino', 'flussi'],
-      response:
-        'ERP + automazioni: ordini→magazzino→fatture, ruoli/permessi, integrazioni tra reparti e report. Esempio: ordine dal sito crea automaticamente DDT e fattura, con notifica al magazzino. Link: /#services. Suggerimento: clicca la card per girarla e vedere i dettagli.'
-    },
-    {
-      keywords: ['ux', 'ui', 'design', 'interfaccia', 'prototipo'],
-      response:
+  1) E-commerce: UX+checkout, pagamenti, integrazioni. Esempio: stock sincronizzato con ERP e checkout con upsell.
+  2) AI Assistenti: chatbot 24/7 su FAQ/catalogo. Esempio: bot che risponde su consegne e apre ticket.
+  3) ERP & Automazioni: processi end‑to‑end. Esempio: ordine → magazzino → fattura automatica.
+  4) UI/UX Design: prototipi e design system. Esempio: prototipo cliccabile per validare il funnel.
+  5) Marketing: SEO+Ads, CRO, tracking. Esempio: landing A/B con tracciamento lead.
+  6) IoT: backend, device management, dati real‑time. Esempio: sensori con dashboard KPI.
+  7) 1H Consulting: review e roadmap. Esempio: call per priorità MVP.
+
+  Link utili: Servizi /#services • Metodo /#method • Contatti /#contact
+  Suggerimento: clicca le card dei servizi per girarle e leggere i dettagli.`
+        : `Here are all Metis services with examples:
+
+  1) E-commerce: UX+checkout, payments, integrations. Example: ERP‑synced stock and upsell checkout.
+  2) AI Assistants: 24/7 chatbot for FAQ/catalog. Example: bot answers delivery times and opens tickets.
+  3) ERP & Automation: end‑to‑end processes. Example: order → warehouse → invoice automatically.
+  4) UI/UX Design: prototypes and design systems. Example: clickable prototype to validate the funnel.
+  5) Marketing: SEO+Ads, CRO, tracking. Example: A/B landing with lead tracking.
+  6) IoT: backend, device management, real‑time data. Example: sensors with KPI dashboards.
+  7) 1H Consulting: review and roadmap. Example: MVP priorities call.
+
+  Useful links: Services /#services • Method /#method • Contact /#contact
+  Tip: click service cards to flip and read details.`
         'UI/UX & product design: flow + prototipo cliccabile, design system e handoff pulito a sviluppo. Esempio: prototipo per testare funnel e micro-copy prima dello sviluppo. Link: /#services. Suggerimento: clicca la card per girarla e vedere i dettagli.'
     },
     {
@@ -77,45 +77,21 @@ const knowledgeBase = {
       response:
         'Marketing: SEO + Ads, landing con CRO, tracking pulito (pixel/eventi/UTM) e nurturing. Esempio: landing A/B con tracciamento completo dei lead. Link: /#services. Suggerimento: clicca la card per girarla e vedere i dettagli.'
     },
+      }
+      if (text.includes('ai') || text.includes('assistente') || text.includes('chatbot')) {
+        return isItalian
+          ? 'AI Assistenti: chatbot 24/7 su FAQ, catalogo e preventivi. Usa AI generativa per suggerire offerte, rispondere a email e fare triage ticket. Se la domanda è complessa, passa a un umano. Esempio: bot che risponde su tempi di consegna e crea ticket. Vantaggio: meno carico sul team, clienti soddisfatti.'
+          : 'AI Assistants: 24/7 chatbots for FAQ, catalog and quotes. Uses generative AI to suggest offers, answer emails and triage tickets, with human handoff for complex cases. Example: bot answers delivery times and creates a support ticket. Benefit: less team load, happier customers.'
     {
+      if (text.includes('erp') || text.includes('gestionale') || text.includes('contabilità') || text.includes('magazzino')) {
+        return isItalian
+          ? 'ERP & Automazioni: organizziamo i processi (ordini→magazzino→fatture→contabilità) in un’unica piattaforma. Ruoli, permessi, approvazioni automatiche, integrazioni con banca/fornitori. Esempio: ordine dal sito crea DDT e fattura, con alert al magazzino. Risultato: trasparenza e decisioni basate sui dati.'
+          : 'ERP & Automation: we centralize processes (orders→warehouse→invoicing→accounting) in one platform. Roles/permissions, automatic approvals, and integrations with banks/suppliers. Example: web order auto‑creates picking list and invoice with warehouse alerts. Result: transparency and data‑driven decisions.'
+      }
       keywords: ['consulenza', 'call', 'ora', '1h', 'review'],
       response:
         '1H Consulting: una call mirata per roadmap, priorità e decisioni rapide con piano d\'azione chiaro. Esempio: review architettura e backlog con priorità per un MVP. Link: /#services e /#contact.'
     },
-    {
-      keywords: ['iot', 'device', 'sensor', 'sensore'],
-      response:
-        'IoT su misura: backend/API, device management, sicurezza, dati real‑time e alert pronti per dashboard/automazioni. Esempio: sensori di produzione che inviano alert e KPI su dashboard. Link: /#services. Suggerimento: clicca la card per girarla e vedere i dettagli.'
-    },
-    {
-      keywords: ['defi', 'token', 'tokenizzazione', 'web3'],
-      response:
-        'DeFi e tokenizzazione: architetture compliant per asset reali e integrazione web3 nel business. Esempio: tokenizzazione di asset immobiliari con accessi regolati. Link: /#services e /#contact.'
-    },
-    {
-      keywords: ['metodo', 'processo', 'portfolio', 'come lavorate', 'step'],
-      response:
-        'Metodo Metis in 4 step: 1) Analisi strategica, 2) Architettura, 3) Sviluppo agile, 4) Rilascio e miglioramento. Esempio: roadmap MVP in 4-6 settimane con rilasci settimanali. Link: /#method.'
-    },
-    {
-      keywords: ['preventivo', 'prezzo', 'costo', 'quanto'],
-      response:
-        'Per un preventivo rapido: scrivici da Contatti (email) oppure clicca WhatsApp in basso a destra. Rispondiamo entro 24h con priorità + stima. Link: /#contact.'
-    },
-    {
-      keywords: ['contatto', 'contattare', 'whatsapp', 'telefono', 'chiamare'],
-      response:
-        'Puoi scriverci dal form Contatti o su WhatsApp Business (risposta entro 24h). Link: /#contact.'
-    },
-    {
-      keywords: ['privacy', 'cookie', 'gdpr'],
-      response:
-        'Privacy e cookie: trovi Privacy Policy e Cookie Policy nel footer. Link: /privacy • /cookie-policy • /cookie-preferences.'
-    }
-  ],
-  en: [
-    {
-      keywords: ['ecommerce', 'e-commerce', 'shop', 'sell online', 'store', 'online store'],
       response:
         'Custom e-commerce: high‑conversion UX + checkout, payments/shipping/promos, and ERP/CRM integrations. Example: real‑time stock sync and an upsell‑ready checkout. Link: /#services. Tip: click the card to flip it and read details.'
     },
@@ -195,7 +171,7 @@ function getReply(input: string, language: 'it' | 'en') {
     text.includes('all the services')
   ) {
     return isItalian
-      ? 'Ecco tutti i servizi Metis con esempi:
+      ? `Ecco tutti i servizi Metis con esempi:
 
 1) E-commerce: UX+checkout, pagamenti, integrazioni. Esempio: stock sincronizzato con ERP e checkout con upsell.
 2) AI Assistenti: chatbot 24/7 su FAQ/catalogo. Esempio: bot che risponde su consegne e apre ticket.
@@ -206,8 +182,8 @@ function getReply(input: string, language: 'it' | 'en') {
 7) 1H Consulting: review e roadmap. Esempio: call per priorità MVP.
 
 Link utili: Servizi /#services • Metodo /#method • Contatti /#contact
-Suggerimento: clicca le card dei servizi per girarle e leggere i dettagli.'
-      : 'Here are all Metis services with examples:
+Suggerimento: clicca le card dei servizi per girarle e leggere i dettagli.`
+      : `Here are all Metis services with examples:
 
 1) E-commerce: UX+checkout, payments, integrations. Example: ERP‑synced stock and upsell checkout.
 2) AI Assistants: 24/7 chatbot for FAQ/catalog. Example: bot answers delivery times and opens tickets.
@@ -218,7 +194,7 @@ Suggerimento: clicca le card dei servizi per girarle e leggere i dettagli.'
 7) 1H Consulting: review and roadmap. Example: MVP priorities call.
 
 Useful links: Services /#services • Method /#method • Contact /#contact
-Tip: click service cards to flip and read details.'
+Tip: click service cards to flip and read details.`
   }
 
   if (text.includes('come funziona') || text.includes('spiegami') || text.includes('come lavora') || text.includes('perché') || text.includes('how does') || text.includes('explain')) {
@@ -226,42 +202,20 @@ Tip: click service cards to flip and read details.'
       return isItalian
         ? 'E-commerce: creiamo siti di vendita con UX che converte, checkout ottimizzato, pagamenti, spedizioni e promo. Integrazione con ERP per sincronizzare catalogo, ordini e inventario in tempo reale. Esempio: stock aggiornato live e promozioni automatiche. ROI: meno errori manuali, più vendite.'
         : 'E-commerce: we build high‑conversion stores with optimized checkout, payments, shipping and promos. ERP integration keeps catalog, orders and inventory synced in real time. Example: live stock updates and automatic promos. ROI: fewer manual errors and more sales.'
+    }
+    if (text.includes('ai') || text.includes('assistente') || text.includes('chatbot')) {
+      return isItalian
+        ? 'AI Assistenti: chatbot 24/7 su FAQ, catalogo e preventivi. Usa AI generativa per suggerire offerte, rispondere a email e fare triage ticket. Se la domanda è complessa, passa a un umano. Esempio: bot che risponde su tempi di consegna e crea ticket. Vantaggio: meno carico sul team, clienti soddisfatti.'
+        : 'AI Assistants: 24/7 chatbots for FAQ, catalog and quotes. Uses generative AI to suggest offers, answer emails and triage tickets, with human handoff for complex cases. Example: bot answers delivery times and creates a support ticket. Benefit: less team load, happier customers.'
+    }
+    if (text.includes('erp') || text.includes('gestionale') || text.includes('contabilità') || text.includes('magazzino')) {
+      return isItalian
+        ? 'ERP & Automazioni: organizziamo i processi (ordini→magazzino→fatture→contabilità) in un’unica piattaforma. Ruoli, permessi, approvazioni automatiche, integrazioni con banca/fornitori. Esempio: ordine dal sito crea DDT e fattura, con alert al magazzino. Risultato: trasparenza e decisioni basate sui dati.'
+        : 'ERP & Automation: we centralize processes (orders→warehouse→invoicing→accounting) in one platform. Roles/permissions, automatic approvals, and integrations with banks/suppliers. Example: web order auto‑creates picking list and invoice with warehouse alerts. Result: transparency and data‑driven decisions.'
+    }
+    return isItalian
       ? 'Posso spiegare ogni servizio. Dimmi quale ti interessa (e-commerce, AI, ERP, design, marketing, IoT) e ti dettaglio come funziona e perché fa la differenza.'
       : 'I can explain any service. Tell me which one you need (e-commerce, AI, ERP, design, marketing, IoT) and I will detail how it works and why it matters.'
-  }
-
-  if (
-    text.includes('tutti i servizi') ||
-    text.includes('tutti i nostri servizi') ||
-    text.includes('all services') ||
-    text.includes('all of your services') ||
-    text.includes('all the services')
-  ) {
-    return isItalian
-      ? 'Ecco tutti i servizi Metis con esempi:
-
-1) E-commerce: UX+checkout, pagamenti, integrazioni. Esempio: stock sincronizzato con ERP e checkout con upsell.
-2) AI Assistenti: chatbot 24/7 su FAQ/catalogo. Esempio: bot che risponde su consegne e apre ticket.
-3) ERP & Automazioni: processi end‑to‑end. Esempio: ordine → magazzino → fattura automatica.
-4) UI/UX Design: prototipi e design system. Esempio: prototipo cliccabile per validare il funnel.
-5) Marketing: SEO+Ads, CRO, tracking. Esempio: landing A/B con tracciamento lead.
-6) IoT: backend, device management, dati real‑time. Esempio: sensori con dashboard KPI.
-7) 1H Consulting: review e roadmap. Esempio: call per priorità MVP.
-
-Link utili: Servizi /#services • Metodo /#method • Contatti /#contact
-Suggerimento: clicca le card dei servizi per girarle e leggere i dettagli.'
-      : 'Here are all Metis services with examples:
-
-1) E-commerce: UX+checkout, payments, integrations. Example: ERP‑synced stock and upsell checkout.
-2) AI Assistants: 24/7 chatbot for FAQ/catalog. Example: bot answers delivery times and opens tickets.
-3) ERP & Automation: end‑to‑end processes. Example: order → warehouse → invoice automatically.
-4) UI/UX Design: prototypes and design systems. Example: clickable prototype to validate the funnel.
-5) Marketing: SEO+Ads, CRO, tracking. Example: A/B landing with lead tracking.
-6) IoT: backend, device management, real‑time data. Example: sensors with KPI dashboards.
-7) 1H Consulting: review and roadmap. Example: MVP priorities call.
-
-Useful links: Services /#services • Method /#method • Contact /#contact
-Tip: click service cards to flip and read details.'
   }
 
   // Detect complex scenarios (e.g., "vendita online + gestionale + assistente")

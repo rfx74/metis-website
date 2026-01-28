@@ -156,6 +156,8 @@ export default function PortfolioSection() {
               key={src}
               src={src}
               alt={steps[idx]?.title ? `${steps[idx]?.title}` : 'Metodo Metis'}
+              width={640}
+              height={480}
               loading="eager"
             />
           ))}
