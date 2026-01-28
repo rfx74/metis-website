@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { loadConsent, subscribeToConsent } from '@/lib/consent'
+import { useLanguage } from '@/lib/LanguageContext'
 
 const OPEN_ADAM_EVENT = 'metis-open-adam'
 const DISABLE_KEY = 'adam-disabled'
@@ -13,92 +13,211 @@ type Message = {
   text: string
 }
 
-const welcomeMessage = `Ciao! Sono ADAM, il tuo assistente 24/7. Ti spiego i servizi Metis (e-commerce, AI, ERP/automazioni, design, marketing, IoT), il metodo in 4 step e ti porto alle sezioni giuste. Se vuoi disattivarmi clicca "Disattiva ADAM".`
-
-const quickTips = [
-  'Cerchi un servizio? Posso consigliarti e portarti alla card corretta.',
-  'Vuoi capire il Metodo Metis in 4 step? Te lo riassumo e ti ci porto.',
-  'Se ti serve un preventivo rapido ti dico come contattarci subito (email o WhatsApp).'
-]
-
-const knowledgeBase = [
-  {
-    keywords: ['ecommerce', 'e-commerce', 'shop', 'vendere online', 'store'],
-    response:
-      'E-commerce su misura: UX + checkout che converte, pagamenti/spedizioni/promo e integrazioni ERP/CRM. Posso portarti alla card "Soluzioni e-commerce personalizzata" nei Servizi.'
+const copy = {
+  it: {
+    welcome:
+      'Ciao! Sono ADAM. Ti spiego i servizi Metis (e-commerce, AI, ERP/automazioni, design, marketing, IoT), il metodo in 4 step e ti porto alle sezioni giuste. Se vuoi disattivarmi clicca "Disattiva".',
+    quickTips: [
+      'Cerchi un servizio? Posso consigliarti e portarti alla card corretta.',
+      'Vuoi capire il Metodo Metis in 4 step? Te lo riassumo e ti ci porto.',
+      'Se ti serve un preventivo rapido ti dico come contattarci subito (email o WhatsApp).'
+    ],
+    placeholder: 'Chiedi ad ADAM...',
+    send: 'Invia',
+    minimize: 'Minimizza',
+    disable: 'Disattiva',
+    quickActions: [
+      { label: 'Vai ai Servizi', target: 'services' },
+      { label: 'Metodo Metis', target: 'method' },
+      { label: 'Chi siamo', target: 'about' },
+      { label: 'Contatti', target: 'contact' },
+    ],
+    webSearch:
+      'Non ho accesso al web in tempo reale. Posso però rispondere usando le informazioni del sito e la mia base di conoscenza. Dimmi pure cosa ti serve e lo dettaglio con esempi pratici.',
+    generalFallback:
+      'Dimmi quale servizio cerchi (e-commerce, AI, ERP, design, marketing, IoT) o una domanda specifica. Sono qui per aiutarti! 🤖'
   },
-  {
-    keywords: ['ai', 'chatbot', 'intelligenza artificiale', 'assistente', 'assistenti'],
-    response:
-      'AI & chatbot: risposte su FAQ/catalogo, copilot per offerte/email, triage ticket con handoff umano. Vuoi vedere la card "AI Assistenti" o un esempio pratico?'
-  },
-  {
-    keywords: ['erp', 'automazioni', 'processi', 'magazzino', 'flussi'],
-    response:
-      'ERP + automazioni: ordini→magazzino→fatture, ruoli/permessi, integrazioni tra reparti e report. Ti porto alla card "ERP & Automazioni"?'
-  },
-  {
-    keywords: ['ux', 'ui', 'design', 'interfaccia', 'prototipo'],
-    response:
-      'UI/UX & product design: flow + prototipo cliccabile, design system e handoff pulito a sviluppo. Vuoi aprire la card "UI/UX + Responsive Design"?'
-  },
-  {
-    keywords: ['marketing', 'seo', 'ads', 'meta', 'google'],
-    response:
-      'Marketing: SEO + Ads, landing con CRO, tracking pulito (pixel/eventi/UTM) e nurturing. Posso portarti alla card "Marketing".'
-  },
-  {
-    keywords: ['consulenza', 'call', 'ora', '1h', 'review'],
-    response:
-      '1H Consulting: una call mirata per roadmap, priorità e decisioni rapide con piano d\'azione chiaro. Vuoi prenotarla da Contatti?'
-  },
-  {
-    keywords: ['iot', 'device', 'sensor', 'sensore'],
-    response:
-      'IoT su misura: backend/API, device management, sicurezza, dati real‑time e alert pronti per dashboard/automazioni. Ti porto alla card "Soluzioni IoT personalizzate"?'
-  },
-  {
-    keywords: ['defi', 'token', 'tokenizzazione', 'web3'],
-    response:
-      'DeFi e tokenizzazione: architetture compliant per asset reali e integrazione web3 nel business. Vuoi parlarne ora?'
-  },
-  {
-    keywords: ['metodo', 'processo', 'portfolio', 'come lavorate', 'step'],
-    response:
-      'Metodo Metis in 4 step: 1) Analisi strategica, 2) Architettura, 3) Sviluppo agile, 4) Rilascio e miglioramento. Posso portarti alla sezione Metodo per i dettagli.'
-  },
-  {
-    keywords: ['preventivo', 'prezzo', 'costo', 'quanto'],
-    response:
-      'Per un preventivo rapido: scrivici da Contatti (email) oppure clicca WhatsApp in basso a destra. Rispondiamo entro 24h con priorità + stima.'
-  },
-  {
-    keywords: ['contatto', 'contattare', 'whatsapp', 'telefono', 'chiamare'],
-    response:
-      'Puoi scriverci dal form Contatti o su WhatsApp Business (risposta entro 24h). Vuoi che ti apra la sezione Contatti?'
-  },
-  {
-    keywords: ['privacy', 'cookie', 'gdpr'],
-    response:
-      'Privacy e cookie: trovi Privacy Policy e Preferenze cookie nel footer. Posso aprirti subito la pagina dedicata.'
+  en: {
+    welcome:
+      'Hi! I am ADAM. I can explain Metis services (e-commerce, AI, ERP/automation, design, marketing, IoT), the 4-step method, and guide you to the right sections. If you want to disable me, click “Disable”.',
+    quickTips: [
+      'Looking for a service? I can recommend the right one and guide you to the correct card.',
+      'Want the 4-step Metis Method? I can summarize it and take you there.',
+      'Need a quick estimate? I can tell you how to contact us fast (email or WhatsApp).'
+    ],
+    placeholder: 'Ask ADAM...',
+    send: 'Send',
+    minimize: 'Minimize',
+    disable: 'Disable',
+    quickActions: [
+      { label: 'Go to Services', target: 'services' },
+      { label: 'Metis Method', target: 'method' },
+      { label: 'About us', target: 'about' },
+      { label: 'Contact', target: 'contact' },
+    ],
+    webSearch:
+      'I do not have real-time web access. I can still answer using the site information and my knowledge. Tell me what you need and I will add practical examples.',
+    generalFallback:
+      'Tell me which service you need (e-commerce, AI, ERP, design, marketing, IoT) or a specific question. I am here to help! 🤖'
   }
-]
+}
 
-function getReply(input: string) {
+const knowledgeBase = {
+  it: [
+    {
+      keywords: ['ecommerce', 'e-commerce', 'shop', 'vendere online', 'store'],
+      response:
+        'E-commerce su misura: UX + checkout che converte, pagamenti/spedizioni/promo e integrazioni ERP/CRM. Esempio: catalogo sincronizzato con il gestionale, stock in tempo reale e checkout con upsell. Vuoi la card "Soluzioni e-commerce personalizzata" nei Servizi?'
+    },
+    {
+      keywords: ['ai', 'chatbot', 'intelligenza artificiale', 'assistente', 'assistenti'],
+      response:
+        'AI & chatbot: risposte su FAQ/catalogo, copilot per offerte/email, triage ticket con handoff umano. Esempio: chatbot che risponde su tempi di consegna e apre ticket al team quando serve. Vuoi vedere la card "AI Assistenti"?'
+    },
+    {
+      keywords: ['erp', 'automazioni', 'processi', 'magazzino', 'flussi'],
+      response:
+        'ERP + automazioni: ordini→magazzino→fatture, ruoli/permessi, integrazioni tra reparti e report. Esempio: ordine dal sito crea automaticamente DDT e fattura, con notifica al magazzino. Ti porto alla card "ERP & Automazioni"?'
+    },
+    {
+      keywords: ['ux', 'ui', 'design', 'interfaccia', 'prototipo'],
+      response:
+        'UI/UX & product design: flow + prototipo cliccabile, design system e handoff pulito a sviluppo. Esempio: prototipo per testare funnel e micro-copy prima dello sviluppo. Vuoi aprire la card "UI/UX + Responsive Design"?'
+    },
+    {
+      keywords: ['marketing', 'seo', 'ads', 'meta', 'google'],
+      response:
+        'Marketing: SEO + Ads, landing con CRO, tracking pulito (pixel/eventi/UTM) e nurturing. Esempio: landing A/B con tracciamento completo dei lead. Posso portarti alla card "Marketing".'
+    },
+    {
+      keywords: ['consulenza', 'call', 'ora', '1h', 'review'],
+      response:
+        '1H Consulting: una call mirata per roadmap, priorità e decisioni rapide con piano d\'azione chiaro. Esempio: review architettura e backlog con priorità per un MVP. Vuoi prenotarla da Contatti?'
+    },
+    {
+      keywords: ['iot', 'device', 'sensor', 'sensore'],
+      response:
+        'IoT su misura: backend/API, device management, sicurezza, dati real‑time e alert pronti per dashboard/automazioni. Esempio: sensori di produzione che inviano alert e KPI su dashboard. Ti porto alla card "Soluzioni IoT personalizzate"?'
+    },
+    {
+      keywords: ['defi', 'token', 'tokenizzazione', 'web3'],
+      response:
+        'DeFi e tokenizzazione: architetture compliant per asset reali e integrazione web3 nel business. Esempio: tokenizzazione di asset immobiliari con accessi regolati. Vuoi parlarne ora?'
+    },
+    {
+      keywords: ['metodo', 'processo', 'portfolio', 'come lavorate', 'step'],
+      response:
+        'Metodo Metis in 4 step: 1) Analisi strategica, 2) Architettura, 3) Sviluppo agile, 4) Rilascio e miglioramento. Esempio: roadmap MVP in 4-6 settimane con rilasci settimanali. Posso portarti alla sezione Metodo per i dettagli.'
+    },
+    {
+      keywords: ['preventivo', 'prezzo', 'costo', 'quanto'],
+      response:
+        'Per un preventivo rapido: scrivici da Contatti (email) oppure clicca WhatsApp in basso a destra. Rispondiamo entro 24h con priorità + stima.'
+    },
+    {
+      keywords: ['contatto', 'contattare', 'whatsapp', 'telefono', 'chiamare'],
+      response:
+        'Puoi scriverci dal form Contatti o su WhatsApp Business (risposta entro 24h). Vuoi che ti apra la sezione Contatti?'
+    },
+    {
+      keywords: ['privacy', 'cookie', 'gdpr'],
+      response:
+        'Privacy e cookie: trovi Privacy Policy e Preferenze cookie nel footer. Posso aprirti subito la pagina dedicata.'
+    }
+  ],
+  en: [
+    {
+      keywords: ['ecommerce', 'e-commerce', 'shop', 'sell online', 'store', 'online store'],
+      response:
+        'Custom e-commerce: high‑conversion UX + checkout, payments/shipping/promos, and ERP/CRM integrations. Example: real‑time stock sync and an upsell‑ready checkout. Want the "Custom e-commerce solutions" card?'
+    },
+    {
+      keywords: ['ai', 'chatbot', 'artificial intelligence', 'assistant', 'assistants'],
+      response:
+        'AI & chatbots: answers for FAQ/catalog, copilot for quotes/emails, ticket triage with human handoff. Example: a bot that answers delivery times and escalates complex cases. Want the "AI Assistants" card?'
+    },
+    {
+      keywords: ['erp', 'automation', 'process', 'warehouse', 'workflow'],
+      response:
+        'ERP + automation: orders→warehouse→invoices, roles/permissions, cross‑department integrations and reporting. Example: site order auto‑creates picking list and invoice. Want the "ERP & Automation" card?'
+    },
+    {
+      keywords: ['ux', 'ui', 'design', 'interface', 'prototype'],
+      response:
+        'UI/UX & product design: flows + clickable prototype, design system, clean dev handoff. Example: prototype to test funnel and micro‑copy before build. Want the "UI/UX + Responsive Design" card?'
+    },
+    {
+      keywords: ['marketing', 'seo', 'ads', 'meta', 'google'],
+      response:
+        'Marketing: SEO + Ads, CRO‑focused landing pages, clean tracking (pixels/events/UTM) and nurturing. Example: A/B landing pages with full lead tracking. Want the "Marketing" card?'
+    },
+    {
+      keywords: ['consulting', 'call', 'hour', '1h', 'review'],
+      response:
+        '1H Consulting: a focused call for roadmap, priorities and fast decisions with a clear action plan. Example: architecture review and MVP backlog priorities. Want to book it from Contact?'
+    },
+    {
+      keywords: ['iot', 'device', 'sensor'],
+      response:
+        'Custom IoT: backend/API, device management, security, real‑time data and alerts for dashboards/automation. Example: production sensors sending alerts and KPI dashboards. Want the "Custom IoT solutions" card?'
+    },
+    {
+      keywords: ['defi', 'token', 'tokenization', 'web3'],
+      response:
+        'DeFi & tokenization: compliant architectures for real‑world assets with web3 integration. Example: tokenized real‑estate with regulated access. Want to discuss it now?'
+    },
+    {
+      keywords: ['method', 'process', 'portfolio', 'how you work', 'steps'],
+      response:
+        'Metis 4‑step method: 1) Strategy analysis, 2) Architecture, 3) Agile development, 4) Release & improvement. Example: a 4–6 week MVP roadmap with weekly releases. Want the Method section?'
+    },
+    {
+      keywords: ['quote', 'price', 'cost', 'how much'],
+      response:
+        'For a quick estimate: contact us via the Contact form or WhatsApp. We respond within 24h with priorities + a rough estimate.'
+    },
+    {
+      keywords: ['contact', 'whatsapp', 'phone', 'call'],
+      response:
+        'You can reach us through the Contact form or WhatsApp Business (reply within 24h). Want me to open the Contact section?'
+    },
+    {
+      keywords: ['privacy', 'cookie', 'gdpr'],
+      response:
+        'Privacy & cookies: you can find Privacy Policy and Cookie Preferences in the footer. Want me to open it?'
+    }
+  ]
+}
+
+function getReply(input: string, language: 'it' | 'en') {
   const text = input.toLowerCase()
 
   // Check for explanation requests first
-  if (text.includes('come funziona') || text.includes('spiegami') || text.includes('come lavora') || text.includes('perché')) {
+  const isItalian = language === 'it'
+
+  if (text.includes('web') || text.includes('cerca sul web') || text.includes('search the web') || text.includes('google')) {
+    return copy[language].webSearch
+  }
+
+  if (text.includes('come funziona') || text.includes('spiegami') || text.includes('come lavora') || text.includes('perché') || text.includes('how does') || text.includes('explain')) {
     if (text.includes('e-commerce') || text.includes('vendere online') || text.includes('shop')) {
-      return `E-commerce: Creiamo siti di vendita con UX che converte, checkout ottimizzato, gestione pagamenti, spedizioni e promo. Si integra col tuo gestionale (ERP) per sincronizzare catalogo, ordini e inventario in tempo reale. ROI: meno errori manali, più vendite.`
+      return isItalian
+        ? 'E-commerce: creiamo siti di vendita con UX che converte, checkout ottimizzato, pagamenti, spedizioni e promo. Integrazione con ERP per sincronizzare catalogo, ordini e inventario in tempo reale. Esempio: stock aggiornato live e promozioni automatiche. ROI: meno errori manuali, più vendite.'
+        : 'E-commerce: we build high‑conversion stores with optimized checkout, payments, shipping and promos. ERP integration keeps catalog, orders and inventory synced in real time. Example: live stock updates and automatic promos. ROI: fewer manual errors and more sales.'
     }
     if (text.includes('ai') || text.includes('assistente') || text.includes('chatbot')) {
-      return `AI Assistenti: Chatbot 24/7 che risponde ai clienti su FAQ, catalogo, preventivi. Usa AI generativa per suggerire offerte, rispondere email, triaging ticket. Se la domanda è complessa, passa a un umano. Vantaggio: meno carico sul team, clienti happy 24/7.`
+      return isItalian
+        ? 'AI Assistenti: chatbot 24/7 su FAQ, catalogo e preventivi. Usa AI generativa per suggerire offerte, rispondere a email e fare triage ticket. Se la domanda è complessa, passa a un umano. Esempio: bot che risponde su tempi di consegna e crea ticket. Vantaggio: meno carico sul team, clienti soddisfatti.'
+        : 'AI Assistants: 24/7 chatbots for FAQ, catalog and quotes. Uses generative AI to suggest offers, answer emails and triage tickets, with human handoff for complex cases. Example: bot answers delivery times and creates a support ticket. Benefit: less team load, happier customers.'
     }
     if (text.includes('erp') || text.includes('gestionale') || text.includes('contabilità') || text.includes('magazzino')) {
-      return `ERP & Automazioni: Organizziamo processi (ordini→magazzino→fatture→contabilità) in un'unica piattaforma. Ruoli e permessi, approvazioni automatiche, integrazioni con banca/fornitori. Risultato: trasparenza, zero errori, decisioni basate su dati reali.`
+      return isItalian
+        ? 'ERP & Automazioni: organizziamo i processi (ordini→magazzino→fatture→contabilità) in un’unica piattaforma. Ruoli, permessi, approvazioni automatiche, integrazioni con banca/fornitori. Esempio: ordine dal sito crea DDT e fattura, con alert al magazzino. Risultato: trasparenza e decisioni basate sui dati.'
+        : 'ERP & Automation: we centralize processes (orders→warehouse→invoicing→accounting) in one platform. Roles/permissions, automatic approvals, and integrations with banks/suppliers. Example: web order auto‑creates picking list and invoice with warehouse alerts. Result: transparency and data‑driven decisions.'
     }
-    return `Posso spiegare ogni servizio. Dimmi quale ti interessa (e-commerce, AI, ERP, design, marketing, IoT) e ti dettaglio come funziona e il perché fa la differenza.`
+    return isItalian
+      ? 'Posso spiegare ogni servizio. Dimmi quale ti interessa (e-commerce, AI, ERP, design, marketing, IoT) e ti dettaglio come funziona e perché fa la differenza.'
+      : 'I can explain any service. Tell me which one you need (e-commerce, AI, ERP, design, marketing, IoT) and I will detail how it works and why it matters.'
   }
 
   // Detect complex scenarios (e.g., "vendita online + gestionale + assistente")
@@ -108,7 +227,9 @@ function getReply(input: string) {
 
   // Smart combo detection for complex requests
   if ((hasEcommerce && hasERP && hasAI) || (text.includes('integrato') && (hasEcommerce || hasERP) && hasAI)) {
-    return `Perfetto! Per un sito di vendita integrato al gestionale + assistente ti consiglio questa combo:\n\n1) *E-commerce personalizzato*: Sito con UX che vende, checkout sicuro, pagamenti, spedizioni integrate\n2) *ERP & Automazioni*: Il cuore - sincronizza ordini dal sito al gestionale, aggiorna catalogo e inventario in tempo reale\n3) *AI Assistenti*: Chatbot 24/7 che risponde su prodotti, assistenza pre/post-vendita, riduce carico team\n\nCome funziona assieme: Cliente compra → sito invia ordine a ERP → chatbot offre supporto 24/7 → team interno vede tutto sincronizzato.\n\nVuoi che ti apra la sezione Servizi per i dettagli?`
+    return isItalian
+      ? 'Perfetto! Per un sito di vendita integrato al gestionale + assistente ti consiglio questa combo:\n\n1) *E-commerce personalizzato*: UX che vende, checkout sicuro, pagamenti e spedizioni integrate\n2) *ERP & Automazioni*: sincronizza ordini dal sito al gestionale, aggiorna catalogo e inventario in tempo reale\n3) *AI Assistenti*: chatbot 24/7 per prodotti e assistenza pre/post-vendita\n\nEsempio: cliente compra → ordine va in ERP → stock aggiornato → chatbot risponde su tracking → team vede tutto sincronizzato.\n\nVuoi che ti apra la sezione Servizi per i dettagli?'
+      : 'Great! For a store integrated with ERP + assistant, I recommend this combo:\n\n1) *Custom e-commerce*: high‑conversion UX, secure checkout, integrated payments and shipping\n2) *ERP & Automation*: syncs orders from the site to the ERP, updates catalog and inventory in real time\n3) *AI Assistants*: 24/7 bot for product questions and pre/post‑sales support\n\nExample: customer buys → order hits ERP → stock updates → chatbot answers tracking → team sees everything synced.\n\nWant me to open the Services section?'
   }
 
   const serviceMatches: { name: string; label: string; desc: string }[] = []
@@ -137,28 +258,32 @@ function getReply(input: string) {
 
   if (serviceMatches.length >= 2) {
     const list = serviceMatches.map((s, i) => `${i + 1}) ${s.label}\n   ${s.desc}`).join('\n')
-    return `Perfetto! Ti consiglio questi ${serviceMatches.length} servizi insieme:\n\n${list}\n\nVuoi che ti apra la sezione Servizi?`
+    return isItalian
+      ? `Perfetto! Ti consiglio questi ${serviceMatches.length} servizi insieme:\n\n${list}\n\nVuoi che ti apra la sezione Servizi?`
+      : `Perfect! I recommend these ${serviceMatches.length} services together:\n\n${list}\n\nWant me to open the Services section?`
   }
 
   // Knowledge base for single-service queries
-  const matched = knowledgeBase.find((topic) =>
+  const matched = knowledgeBase[language].find((topic) =>
     topic.keywords.some((keyword) => text.includes(keyword))
   )
   if (matched) return matched.response
 
-  if (text.includes('suggeriscimi') || text.includes('consigliami') || text.includes('quali sono') || text.includes('che cosa') || text.includes('servizio') || text.includes('servizi')) {
-    return `Ecco i 7 servizi Metis:\n\n1) E-commerce: UX+checkout, pagamenti, integrazioni\n2) AI Assistenti: Chatbot 24/7 su FAQ/catalogo\n3) ERP & Automazioni: Processi end-to-end\n4) UI/UX Design: Prototipi e design system\n5) Marketing: SEO+Ads, landing, tracking\n6) IoT: Backend, device management, dati real-time\n7) 1H Consulting: Review e roadmap\n\nCerchi uno in particolare?`
+  if (text.includes('suggeriscimi') || text.includes('consigliami') || text.includes('quali sono') || text.includes('che cosa') || text.includes('servizio') || text.includes('servizi') || text.includes('services')) {
+    return isItalian
+      ? 'Ecco i 7 servizi Metis:\n\n1) E-commerce: UX+checkout, pagamenti, integrazioni\n2) AI Assistenti: Chatbot 24/7 su FAQ/catalogo\n3) ERP & Automazioni: Processi end-to-end\n4) UI/UX Design: Prototipi e design system\n5) Marketing: SEO+Ads, landing, tracking\n6) IoT: Backend, device management, dati real-time\n7) 1H Consulting: Review e roadmap\n\nCerchi uno in particolare?'
+      : 'Here are the 7 Metis services:\n\n1) E-commerce: UX+checkout, payments, integrations\n2) AI Assistants: 24/7 chatbot for FAQ/catalog\n3) ERP & Automation: end‑to‑end processes\n4) UI/UX Design: prototypes and design systems\n5) Marketing: SEO+Ads, landing, tracking\n6) IoT: backend, device management, real‑time data\n7) 1H Consulting: review and roadmap\n\nWhich one are you interested in?'
   }
 
-  return 'Dimmi quale servizio cerchi (e-commerce, AI, ERP, design, marketing, IoT) o una domanda specifica. Sono qui per aiutarti! 🤖'
+  return copy[language].generalFallback
 }
 
 export default function AdamAssistant() {
+  const { language } = useLanguage()
   const [open, setOpen] = useState(false)
   const [disabled, setDisabled] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
-  const [seen, setSeen] = useState(false)
   const bottomRef = useRef<HTMLDivElement | null>(null)
   const messagesRef = useRef<Message[]>([])
 
@@ -172,26 +297,6 @@ export default function AdamAssistant() {
     const storedDisabled = window.localStorage.getItem(DISABLE_KEY) === '1'
     setDisabled(storedDisabled)
 
-    const storedSeen = window.localStorage.getItem(SEEN_KEY) === '1'
-    setSeen(storedSeen)
-
-    const consent = loadConsent()
-    if (consent && !storedSeen && !storedDisabled) {
-      setOpen(true)
-      setMessages([{ id: 'welcome', from: 'adam', text: welcomeMessage }])
-      window.localStorage.setItem(SEEN_KEY, '1')
-      setSeen(true)
-    }
-
-    const unsubscribe = subscribeToConsent(() => {
-      if (!storedDisabled && !storedSeen) {
-        setOpen(true)
-        setMessages([{ id: 'welcome', from: 'adam', text: welcomeMessage }])
-        window.localStorage.setItem(SEEN_KEY, '1')
-        setSeen(true)
-      }
-    })
-
     const openHandler = () => {
       if (typeof window !== 'undefined') {
         window.localStorage.setItem(DISABLE_KEY, '0')
@@ -199,16 +304,16 @@ export default function AdamAssistant() {
       setDisabled(false)
       setOpen(true)
       if (!messagesRef.current.length) {
-        setMessages([{ id: 'welcome', from: 'adam', text: welcomeMessage }])
+        setMessages([{ id: 'welcome', from: 'adam', text: copy[language].welcome }])
+        window.localStorage.setItem(SEEN_KEY, '1')
       }
     }
     window.addEventListener(OPEN_ADAM_EVENT, openHandler)
 
     return () => {
-      unsubscribe()
       window.removeEventListener(OPEN_ADAM_EVENT, openHandler)
     }
-  }, [])
+  }, [language])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -227,22 +332,14 @@ export default function AdamAssistant() {
     const reply: Message = {
       id: `${Date.now()}-adam`,
       from: 'adam',
-      text: getReply(trimmed),
+      text: getReply(trimmed, language),
     }
 
     setMessages((prev) => [...prev, userMessage, reply])
     setInput('')
   }
 
-  const quickActions = useMemo(
-    () => [
-      { label: 'Vai ai Servizi', target: 'services' },
-      { label: 'Metodo Metis', target: 'method' },
-      { label: 'Chi siamo', target: 'about' },
-      { label: 'Contatti', target: 'contact' },
-    ],
-    []
-  )
+  const quickActions = useMemo(() => copy[language].quickActions, [language])
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id)
@@ -265,10 +362,17 @@ export default function AdamAssistant() {
       {!open && (
         <button
           type="button"
-          className="flex fixed right-4 bottom-24 z-[60] items-center gap-3 rounded-full border border-white/15 bg-gradient-to-r from-cyan-500/30 to-fuchsia-500/20 px-3.5 py-2 text-xs text-white/90 backdrop-blur-lg shadow-[0_12px_40px_rgba(56,189,248,0.25)] hover:brightness-110 transition-all"
-          onClick={() => setOpen(true)}
+          aria-label="Apri ADAM"
+          className="flex fixed right-3 bottom-20 sm:right-4 sm:bottom-24 z-[60] items-center rounded-full border border-white/15 bg-gradient-to-r from-cyan-500/30 to-fuchsia-500/20 p-2.5 text-xs text-white/90 backdrop-blur-lg shadow-[0_12px_40px_rgba(56,189,248,0.25)] hover:brightness-110 transition-all"
+          onClick={() => {
+            setOpen(true)
+            if (!messagesRef.current.length) {
+              setMessages([{ id: 'welcome', from: 'adam', text: copy[language].welcome }])
+              window.localStorage.setItem(SEEN_KEY, '1')
+            }
+          }}
         >
-          <span className="relative h-9 w-9 rounded-2xl bg-gradient-to-br from-cyan-400 via-fuchsia-500 to-indigo-500 p-[2px] shadow-[0_10px_30px_rgba(56,189,248,0.35)]">
+          <span className="relative h-10 w-10 rounded-2xl bg-gradient-to-br from-cyan-400 via-fuchsia-500 to-indigo-500 p-[2px] shadow-[0_10px_30px_rgba(56,189,248,0.35)]">
             <span className="absolute -right-[6px] -bottom-[6px] h-3.5 w-3.5 rounded-full bg-emerald-400 border border-[#0b1220] shadow" title="Online" />
             <span className="relative flex h-full w-full items-center justify-center rounded-[14px] bg-[#0b1220]">
               <svg className="w-5 h-5 text-cyan-300" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -282,15 +386,11 @@ export default function AdamAssistant() {
               </svg>
             </span>
           </span>
-          <div className="flex flex-col items-start leading-tight">
-            <span className="text-[11px] uppercase tracking-[0.22em] text-white/60">Assistente</span>
-            <span className="text-sm font-semibold text-white">ADAM 24/7</span>
-          </div>
         </button>
       )}
 
       {open && (
-        <div className="fixed right-4 bottom-24 z-[70] w-[min(92vw,390px)] max-h-[78vh] rounded-[28px] border border-white/15 bg-gradient-to-br from-[#0b1220]/95 via-[#111827]/95 to-[#0f172a]/95 text-white shadow-[0_24px_80px_rgba(15,23,42,0.65)] backdrop-blur-xl overflow-hidden flex flex-col">
+        <div className="fixed right-3 bottom-20 sm:right-4 sm:bottom-24 z-[70] w-[min(92vw,380px)] sm:w-[min(92vw,390px)] max-h-[65vh] sm:max-h-[78vh] rounded-[28px] border border-white/15 bg-gradient-to-br from-[#0b1220]/95 via-[#111827]/95 to-[#0f172a]/95 text-white shadow-[0_24px_80px_rgba(15,23,42,0.65)] backdrop-blur-xl overflow-hidden flex flex-col">
           <div className="absolute -top-24 -right-24 h-56 w-56 rounded-full bg-cyan-500/20 blur-3xl" aria-hidden="true" />
           <div className="absolute -bottom-28 -left-24 h-64 w-64 rounded-full bg-fuchsia-500/15 blur-3xl" aria-hidden="true" />
           <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between sticky top-0 z-10 bg-[#0b1220]/90 backdrop-blur-xl">
@@ -315,7 +415,6 @@ export default function AdamAssistant() {
               </div>
               <div>
                 <h3 className="text-lg font-semibold leading-tight">ADAM</h3>
-                <p className="text-[11px] uppercase tracking-[0.22em] text-white/60">Assistente 24/7</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -324,14 +423,14 @@ export default function AdamAssistant() {
                 onClick={() => setOpen(false)}
                 className="text-xs text-white/70 hover:text-white"
               >
-                Minimizza
+                {copy[language].minimize}
               </button>
               <button
                 type="button"
                 onClick={disableAssistant}
                 className="text-xs text-white/70 hover:text-white"
               >
-                Disattiva
+                {copy[language].disable}
               </button>
             </div>
           </div>
@@ -339,8 +438,8 @@ export default function AdamAssistant() {
           <div className="px-5 py-4 space-y-3 text-sm flex-1 min-h-0 overflow-y-auto">
             {messages.length === 0 ? (
               <div className="space-y-3 text-white/80">
-                <p>{welcomeMessage}</p>
-                {quickTips.map((tip) => (
+                <p>{copy[language].welcome}</p>
+                {copy[language].quickTips.map((tip) => (
                   <p key={tip} className="text-white/70">• {tip}</p>
                 ))}
               </div>
@@ -378,7 +477,7 @@ export default function AdamAssistant() {
                 onKeyDown={(event) => {
                   if (event.key === 'Enter') sendMessage()
                 }}
-                placeholder="Chiedi ad ADAM..."
+                placeholder={copy[language].placeholder}
                 className="flex-1 rounded-xl bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-cyan-400/40"
               />
               <button
@@ -386,7 +485,7 @@ export default function AdamAssistant() {
                 onClick={sendMessage}
                 className="rounded-xl bg-gradient-to-r from-cyan-400 to-fuchsia-500 px-4 py-2 text-sm font-semibold text-slate-900 shadow-md hover:brightness-110 transition-all"
               >
-                Invia
+                {copy[language].send}
               </button>
             </div>
           </div>
