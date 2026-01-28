@@ -7,6 +7,50 @@ const OPEN_ADAM_EVENT = 'metis-open-adam'
 const DISABLE_KEY = 'adam-disabled'
 const SEEN_KEY = 'adam-seen'
 
+const openEmailClient = (subject: string) => {
+  if (typeof window === 'undefined') return
+
+  const mailto = `mailto:info@metis-tech.it?subject=${encodeURIComponent(subject)}`
+  
+  // Try mailto first (works on most devices)
+  window.location.href = mailto
+
+  // Webmail fallbacks in sequence
+  const webmailOptions = [
+    { name: 'Gmail', url: `https://mail.google.com/mail/?view=cm&fs=1&to=info@metis-tech.it&su=${encodeURIComponent(subject)}` },
+    { name: 'Outlook', url: `https://outlook.live.com/mail/0/compose?to=info@metis-tech.it&subject=${encodeURIComponent(subject)}` },
+    { name: 'Yahoo', url: `https://compose.mail.yahoo.com/?to=info@metis-tech.it&subject=${encodeURIComponent(subject)}` },
+    { name: 'ProtonMail', url: `https://mail.proton.me/u/0/inbox?action=compose&to=info@metis-tech.it&subject=${encodeURIComponent(subject)}` },
+    { name: 'Fastmail', url: `https://www.fastmail.com/action/compose?to=info@metis-tech.it&subject=${encodeURIComponent(subject)}` },
+    { name: 'Zoho Mail', url: `https://mail.zoho.com/?sc=http&login=true#compose?to=info@metis-tech.it&subject=${encodeURIComponent(subject)}` },
+    { name: 'Tutanota', url: `https://mail.tutanota.com/#new?to=info@metis-tech.it&subject=${encodeURIComponent(subject)}` },
+    { name: 'Mailbox.org', url: `https://mailbox.org/en/user/webmail?action=compose&to=info@metis-tech.it&subject=${encodeURIComponent(subject)}` },
+  ]
+
+  let fallbackIndex = 0
+  const tryNextWebmail = () => {
+    if (fallbackIndex >= webmailOptions.length) return
+    
+    const option = webmailOptions[fallbackIndex]
+    fallbackIndex++
+    
+    const newWindow = window.open(option.url, '_blank')
+    
+    // If window didn't open (blocked), try next after 500ms
+    if (!newWindow) {
+      setTimeout(tryNextWebmail, 500)
+    }
+  }
+
+  // Try webmail fallbacks after 1.5 seconds
+  setTimeout(() => {
+    const stillHere = document.hidden === false
+    if (stillHere) {
+      tryNextWebmail()
+    }
+  }, 1500)
+}
+
 const normalizeAnswer = (value: string) =>
   value
     .toLowerCase()
@@ -303,6 +347,15 @@ Tip: click service cards to flip and read details.`
     'assistente digitale', 'assistente virtuale'
   ]
 
+  // Keywords per servizi alternativi che indirizzano a 1H Consulting
+  const consultingKeywordsIT = [
+    'blog', 'blog site', 'sito blog', 'blogging', 'blogger',
+    'video', 'videoblog', 'video blog', 'vlog', 'youtube',
+    'app', 'applicazione', 'mobile app', 'app mobile',
+    'portale', 'piattaforma', 'web app',
+    'landing page', 'squeeze page', 'sales page'
+  ]
+
   // Keywords espanse - ENGLISH
   const ecommerceKeywordsEN = [
     'ecommerce', 'e-commerce', 'shop', 'sell online', 'store', 'online store',
@@ -328,11 +381,32 @@ Tip: click service cards to flip and read details.`
     'chat', 'automatic reply', 'virtual assistant', 'smart assistant', 'digital assistant'
   ]
 
+  // Keywords per servizi alternativi che indirizzano a 1H Consulting
+  const consultingKeywordsEN = [
+    'blog', 'blog site', 'blogging', 'blogger',
+    'video', 'videoblog', 'video blog', 'vlog', 'youtube',
+    'app', 'application', 'mobile app', 'mobile application',
+    'portal', 'platform', 'web app',
+    'landing page', 'squeeze page', 'sales page'
+  ]
+
   const hasEcommerce = ecommerceKeywordsIT.some((k) => text.includes(k)) || ecommerceKeywordsEN.some((k) => text.includes(k))
     
   const hasERP = erpKeywordsIT.some((k) => text.includes(k)) || erpKeywordsEN.some((k) => text.includes(k))
     
   const hasAI = aiKeywordsIT.some((k) => text.includes(k)) || aiKeywordsEN.some((k) => text.includes(k))
+
+  const hasConsulting = consultingKeywordsIT.some((k) => text.includes(k)) || consultingKeywordsEN.some((k) => text.includes(k))
+
+  // If user asks for alternative service (blog, app, video, etc.), suggest 1H Consulting
+  if (hasConsulting && !hasEcommerce && !hasERP && !hasAI) {
+    return {
+      text: isItalian
+        ? `Mi sembra una richiesta interessante! Per un progetto come questo, consiglio una **1H Consulting** con il nostro team per approfondire il tuo progetto, definire la soluzione migliore e la roadmap.\n\nVuoi che ti metti in contatto con noi? Rispondi sì o no.`
+        : `This sounds like an interesting project! I recommend a **1H Consulting** call with our team to discuss your needs, define the best solution, and create a roadmap.\n\nWould you like me to help you reach out to us? Reply yes or no.`,
+      askQuote: true
+    }
+  }
 
   const primaryServicesCount = [hasEcommerce, hasERP, hasAI].filter(Boolean).length
 
@@ -645,17 +719,13 @@ export default function AdamAssistant() {
 
     if (awaitingQuote) {
       if (isAffirmative(trimmed)) {
-        const subject = encodeURIComponent(isItalian ? 'Richiesta preventivo Metis' : 'Metis quote request')
-        const body = encodeURIComponent('')
-
-        if (typeof window !== 'undefined') {
-          window.location.href = `mailto:info@metis-tech.it?subject=${subject}&body=${body}`
-        }
+        const subject = isItalian ? 'Richiesta preventivo Metis' : 'Metis quote request'
+        openEmailClient(subject)
 
         appendAdamMessage(
           isItalian
-            ? 'Perfetto! Sto aprendo ora la tua email indirizzata a info@metis-tech.it.'
-            : 'Great! I am opening your email to info@metis-tech.it now.'
+            ? 'Perfetto! Sto aprendo ora il tuo client di posta indirizzato a info@metis-tech.it.'
+            : 'Great! I am opening your email client to contact us now.'
         )
         setAwaitingQuote(false)
         return
