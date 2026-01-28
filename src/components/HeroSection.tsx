@@ -138,10 +138,10 @@ export default function HeroSection() {
             className="mb-10 sm:mb-12"
           >
             <motion.img
-              src="/Metis scritta trasparente.webp"
+              src="/metis-scritta-800.webp"
               alt="Metis"
-              width={640}
-              height={200}
+              width={800}
+              height={162}
               className="w-80 sm:w-96 md:w-[32rem] lg:w-[40rem] max-w-full h-auto mx-auto"
               style={{
                 filter:

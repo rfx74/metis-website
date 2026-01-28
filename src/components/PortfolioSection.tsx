@@ -113,18 +113,15 @@ export default function PortfolioSection() {
 
   const stepImages = useMemo(
     () => [
-      '/method/step-1-strategy.webp',
-      '/method/step-2-architecture.webp',
-      '/method/step-3-agile.webp',
-      '/method/step-4-release.webp'
+      '/method/step-1-strategy-550.webp',
+      '/method/step-2-architecture-550.webp',
+      '/method/step-3-agile-550.webp',
+      '/method/step-4-release-550.webp'
     ],
     []
   )
 
   const currentImage = stepImages[safeActiveStep] ?? stepImages[0]
-
-  // Preload method images so they are ready on first interaction
-  const preloadImages = stepImages
 
   useEffect(() => {
     if (!isInView) return
@@ -149,19 +146,8 @@ export default function PortfolioSection() {
       className="min-h-screen py-20 lg:py-32 bg-transparent"
     >
       <div className="container mx-auto px-4 sm:px-6 text-center">
-        {/* Preload method images to avoid delayed loads on tab click */}
-        <div className="sr-only" aria-hidden="true">
-          {preloadImages.map((src, idx) => (
-            <img
-              key={src}
-              src={src}
-              alt={steps[idx]?.title ? `${steps[idx]?.title}` : 'Metodo Metis'}
-              width={640}
-              height={480}
-              loading="eager"
-            />
-          ))}
-        </div>
+        {/* Preload first method image only via link preload in head */}
+        <link rel="preload" as="image" href="/method/step-1-strategy-550.webp" />
 
         <motion.h2 
           initial={{ opacity: 0, y: 60 }}
@@ -277,10 +263,10 @@ export default function PortfolioSection() {
                         <img
                           src={currentImage}
                           alt={currentStep?.title ?? 'Method step'}
-                          width={640}
-                          height={480}
+                          width={550}
+                          height={300}
                           className="w-full h-auto object-cover rounded-3xl"
-                          loading={safeActiveStep === 0 ? 'eager' : 'lazy'}
+                          loading="lazy"
                         />
                       </div>
                     </div>

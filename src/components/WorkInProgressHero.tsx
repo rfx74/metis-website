@@ -17,8 +17,10 @@ export default function WorkInProgressHero() {
           className="mb-12"
         >
           <img
-            src="/solo logo trasparente.png"
+            src="/solo-logo-320.webp"
             alt="Metis Logo"
+            width={320}
+            height={242}
             className="w-32 h-32 md:w-40 md:h-40 mx-auto drop-shadow-2xl"
           />
         </motion.div>

@@ -149,8 +149,11 @@ export default function Navigation() {
             >
               <div className="flex items-center">
                 <motion.img
-                  src="/solo logo trasparente.png"
+                  src="/solo-logo-80.webp"
+                  srcSet="/solo-logo-80.webp 1x, /solo-logo-160.webp 2x"
                   alt="Metis Logo"
+                  width={40}
+                  height={30}
                   className="w-8 h-8 md:w-10 md:h-10 outline-none focus:outline-none"
                   layoutId="nav-logo"
                 />
@@ -328,8 +331,10 @@ export default function Navigation() {
             exit={{ opacity: 0 }}
           >
             <motion.img
-              src="/solo logo trasparente.png"
+              src="/solo-logo-320.webp"
               alt="Metis Logo"
+              width={320}
+              height={242}
               className="w-24 h-24 sm:w-32 sm:h-32"
               layoutId="nav-logo"
                 animate={{ scale: [1, 5.5, 1.6, 1.2] }}
