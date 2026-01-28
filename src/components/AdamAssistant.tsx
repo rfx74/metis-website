@@ -645,10 +645,17 @@ export default function AdamAssistant() {
 
     if (awaitingQuote) {
       if (isAffirmative(trimmed)) {
+        const subject = encodeURIComponent(isItalian ? 'Richiesta preventivo Metis' : 'Metis quote request')
+        const body = encodeURIComponent('')
+
+        if (typeof window !== 'undefined') {
+          window.location.href = `mailto:info@metis-tech.it?subject=${subject}&body=${body}`
+        }
+
         appendAdamMessage(
           isItalian
-            ? 'Perfetto! Inviaci una mail a info@metis-tech.it con una breve descrizione del progetto (settore, obiettivi, budget indicativo) e ti rispondiamo entro 24 ore.'
-            : 'Great! Please send an email to info@metis-tech.it with a short project summary (industry, goals, indicative budget) and we will reply within 24 hours.'
+            ? 'Perfetto! Sto aprendo ora la tua email indirizzata a info@metis-tech.it.'
+            : 'Great! I am opening your email to info@metis-tech.it now.'
         )
         setAwaitingQuote(false)
         return
