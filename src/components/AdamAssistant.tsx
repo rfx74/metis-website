@@ -11,9 +11,14 @@ const openEmailClient = (subject: string) => {
   if (typeof window === 'undefined') return
 
   const mailto = `mailto:info@metis-tech.it?subject=${encodeURIComponent(subject)}`
-  
-  // Try mailto first (works on most devices)
-  window.location.href = mailto
+
+  // Trigger mailto via synthetic anchor click (better compatibility than location.href alone)
+  const a = document.createElement('a')
+  a.href = mailto
+  a.rel = 'noopener'
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
 
   // Webmail fallbacks in sequence
   const webmailOptions = [
@@ -30,25 +35,31 @@ const openEmailClient = (subject: string) => {
   let fallbackIndex = 0
   const tryNextWebmail = () => {
     if (fallbackIndex >= webmailOptions.length) return
-    
+
     const option = webmailOptions[fallbackIndex]
     fallbackIndex++
-    
-    const newWindow = window.open(option.url, '_blank')
-    
-    // If window didn't open (blocked), try next after 500ms
+
+    const newWindow = window.open(option.url, '_blank', 'noopener,noreferrer')
+
+    // If popup blocked, attempt next option shortly
     if (!newWindow) {
-      setTimeout(tryNextWebmail, 500)
+      setTimeout(tryNextWebmail, 350)
     }
   }
 
-  // Try webmail fallbacks after 1.5 seconds
+  // Start fallbacks after a short delay; if still on the page, open webmail
   setTimeout(() => {
-    const stillHere = document.hidden === false
-    if (stillHere) {
+    if (document.visibilityState === 'visible') {
       tryNextWebmail()
     }
-  }, 1500)
+  }, 1200)
+
+  // Last resort: if nothing happened, navigate current tab to the first webmail option
+  setTimeout(() => {
+    if (document.visibilityState === 'visible') {
+      window.location.href = webmailOptions[0].url
+    }
+  }, 4000)
 }
 
 const normalizeAnswer = (value: string) =>
@@ -721,12 +732,6 @@ export default function AdamAssistant() {
       if (isAffirmative(trimmed)) {
         const subject = isItalian ? 'Richiesta preventivo Metis' : 'Metis quote request'
         openEmailClient(subject)
-
-        appendAdamMessage(
-          isItalian
-            ? 'Perfetto! Sto aprendo ora il tuo client di posta indirizzato a info@metis-tech.it.'
-            : 'Great! I am opening your email client to contact us now.'
-        )
         setAwaitingQuote(false)
         return
       }
