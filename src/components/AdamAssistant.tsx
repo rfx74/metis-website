@@ -220,27 +220,6 @@ Useful links: Services /#services • Method /#method • Contact /#contact
 Tip: click service cards to flip and read details.`
   }
 
-  if (text.includes('come funziona') || text.includes('spiegami') || text.includes('come lavora') || text.includes('perché') || text.includes('how does') || text.includes('explain')) {
-    if (text.includes('e-commerce') || text.includes('vendere online') || text.includes('shop')) {
-      return isItalian
-        ? 'E-commerce: creiamo siti di vendita con UX che converte, checkout ottimizzato, pagamenti, spedizioni e promo. Integrazione con ERP per sincronizzare catalogo, ordini e inventario in tempo reale. Esempio: stock aggiornato live e promozioni automatiche. ROI: meno errori manuali, più vendite.'
-        : 'E-commerce: we build high‑conversion stores with optimized checkout, payments, shipping and promos. ERP integration keeps catalog, orders and inventory synced in real time. Example: live stock updates and automatic promos. ROI: fewer manual errors and more sales.'
-    }
-    if (text.includes('ai') || text.includes('assistente') || text.includes('chatbot')) {
-      return isItalian
-        ? 'AI Assistenti: chatbot 24/7 su FAQ, catalogo e preventivi. Usa AI generativa per suggerire offerte, rispondere a email e fare triage ticket. Se la domanda è complessa, passa a un umano. Esempio: bot che risponde su tempi di consegna e crea ticket. Vantaggio: meno carico sul team, clienti soddisfatti.'
-        : 'AI Assistants: 24/7 chatbots for FAQ, catalog and quotes. Uses generative AI to suggest offers, answer emails and triage tickets, with human handoff for complex cases. Example: bot answers delivery times and creates a support ticket. Benefit: less team load, happier customers.'
-    }
-    if (text.includes('erp') || text.includes('gestionale') || text.includes('contabilità') || text.includes('magazzino')) {
-      return isItalian
-        ? 'ERP & Automazioni: organizziamo i processi (ordini→magazzino→fatture→contabilità) in un’unica piattaforma. Ruoli, permessi, approvazioni automatiche, integrazioni con banca/fornitori. Esempio: ordine dal sito crea DDT e fattura, con alert al magazzino. Risultato: trasparenza e decisioni basate sui dati.'
-        : 'ERP & Automation: we centralize processes (orders→warehouse→invoicing→accounting) in one platform. Roles/permissions, automatic approvals, and integrations with banks/suppliers. Example: web order auto‑creates picking list and invoice with warehouse alerts. Result: transparency and data‑driven decisions.'
-    }
-    return isItalian
-      ? 'Posso spiegare ogni servizio. Dimmi quale ti interessa (e-commerce, AI, ERP, design, marketing, IoT) e ti dettaglio come funziona e perché fa la differenza.'
-      : 'I can explain any service. Tell me which one you need (e-commerce, AI, ERP, design, marketing, IoT) and I will detail how it works and why it matters.'
-  }
-
   // Keywords espanse per catturare più variazioni - ITALIANO
   const ecommerceKeywordsIT = [
     'ecommerce', 'e-commerce', 'shop', 'vendere online', 'store', 'vendita online',
@@ -298,8 +277,15 @@ Tip: click service cards to flip and read details.`
     
   const hasAI = aiKeywordsIT.some((k) => text.includes(k)) || aiKeywordsEN.some((k) => text.includes(k))
 
+  const primaryServicesCount = [hasEcommerce, hasERP, hasAI].filter(Boolean).length
+
   // Check for integrated/combined services request (both IT and EN)
-  const wantsIntegration = ['integrato', 'integrati', 'integrazione', 'integrated', 'integration', 'combined', 'together', 'insieme', 'completo', 'complete', 'all-in-one'].some((k) => text.includes(k))
+  const wantsIntegration = [
+    'integrato', 'integrati', 'integrazione', 'integrare', 'integra', 'integrarlo', 'integrarla',
+    'integrated', 'integration', 'integrate it', 'connect it', 'connected',
+    'combined', 'together', 'insieme', 'collegato', 'collegate', 'completo', 'complete', 'all-in-one',
+    'ecosistema', 'ecosystem'
+  ].some((k) => text.includes(k))
 
   if ((hasEcommerce && hasERP && hasAI) || (wantsIntegration && (hasEcommerce || hasERP) && hasAI)) {
     return isItalian
@@ -451,8 +437,8 @@ Links: /#services for details • /#contact for a free quote`
 
   // "Come funziona" check - ONLY if asking specifically about one service
   if (text.includes('come funziona') || text.includes('spiegami') || text.includes('come lavora') || text.includes('perché') || text.includes('how does') || text.includes('explain')) {
-    // Only respond with single service explanation if not multiple services detected
-    if (!hasEcommerce || !hasERP && !hasAI) {
+    // Only respond with single service explanation if one primary service detected
+    if (primaryServicesCount <= 1) {
       if (text.includes('e-commerce') || text.includes('vendere online') || text.includes('shop')) {
         return isItalian
           ? 'E-commerce: creiamo siti di vendita con UX che converte, checkout ottimizzato, pagamenti, spedizioni e promo. Integrazione con ERP per sincronizzare catalogo, ordini e inventario in tempo reale. Esempio: stock aggiornato live e promozioni automatiche. ROI: meno errori manuali, più vendite.'
