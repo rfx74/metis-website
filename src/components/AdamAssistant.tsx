@@ -246,7 +246,8 @@ Tip: click service cards to flip and read details.`
     'ecommerce', 'e-commerce', 'shop', 'vendere online', 'store', 'vendita online',
     'sito di vendita', 'sito vendita', 'negozio online', 'negozio digitale',
     'vendite online', 'commercio elettronico', 'piattaforma vendita', 'catalogo online',
-    'carrello', 'checkout', 'pagamenti online', 'spedizioni', 'ordini online'
+    'carrello', 'checkout', 'pagamenti online', 'spedizioni', 'ordini online',
+    'sito per la vendita', 'vendita dei miei prodotti', 'vendere i miei prodotti'
   ]
   
   const erpKeywordsIT = [
@@ -262,7 +263,8 @@ Tip: click service cards to flip and read details.`
     'customer care', 'customercare', 'assistenza clienti', 'supporto clienti',
     'help desk', 'helpdesk', 'ticket', 'faq', 'risposte automatiche',
     'assistenza', 'supporto', 'care', 'servizio clienti', 'post-vendita',
-    'post vendita', 'pre-vendita', 'pre vendita', 'chat', 'risposta automatica'
+    'post vendita', 'pre-vendita', 'pre vendita', 'chat', 'risposta automatica',
+    'assistente digitale', 'assistente virtuale'
   ]
 
   // Keywords espanse - ENGLISH
@@ -270,7 +272,8 @@ Tip: click service cards to flip and read details.`
     'ecommerce', 'e-commerce', 'shop', 'sell online', 'store', 'online store',
     'online shop', 'web store', 'digital store', 'selling online', 'sales website',
     'shopping cart', 'checkout', 'online payments', 'shipping', 'online orders',
-    'product catalog', 'online catalog', 'digital commerce', 'retail'
+    'product catalog', 'online catalog', 'digital commerce', 'retail',
+    'sell my products', 'selling my products', 'sales site'
   ]
   
   const erpKeywordsEN = [
@@ -286,7 +289,7 @@ Tip: click service cards to flip and read details.`
     'customer care', 'customercare', 'customer service', 'customer support',
     'help desk', 'helpdesk', 'ticket', 'faq', 'automatic responses',
     'support', 'care', 'post-sale', 'post sale', 'pre-sale', 'pre sale',
-    'chat', 'automatic reply', 'virtual assistant', 'smart assistant'
+    'chat', 'automatic reply', 'virtual assistant', 'smart assistant', 'digital assistant'
   ]
 
   const hasEcommerce = ecommerceKeywordsIT.some((k) => text.includes(k)) || ecommerceKeywordsEN.some((k) => text.includes(k))
@@ -444,6 +447,29 @@ Links: /#services for details • /#contact for a free quote`
     return isItalian
       ? `Perfetto! Per il tuo progetto ti consiglio questi ${serviceMatches.length} servizi Metis:\n\n${list}\n\n**Come funzionano insieme:** questi servizi si integrano per creare un ecosistema completo e automatizzato.\n\nLink: /#services per i dettagli • /#contact per un preventivo`
       : `Perfect! For your project I recommend these ${serviceMatches.length} Metis services:\n\n${list}\n\n**How they work together:** these services integrate to create a complete, automated ecosystem.\n\nLinks: /#services for details • /#contact for a quote`
+  }
+
+  // "Come funziona" check - ONLY if asking specifically about one service
+  if (text.includes('come funziona') || text.includes('spiegami') || text.includes('come lavora') || text.includes('perché') || text.includes('how does') || text.includes('explain')) {
+    // Only respond with single service explanation if not multiple services detected
+    if (!hasEcommerce || !hasERP && !hasAI) {
+      if (text.includes('e-commerce') || text.includes('vendere online') || text.includes('shop')) {
+        return isItalian
+          ? 'E-commerce: creiamo siti di vendita con UX che converte, checkout ottimizzato, pagamenti, spedizioni e promo. Integrazione con ERP per sincronizzare catalogo, ordini e inventario in tempo reale. Esempio: stock aggiornato live e promozioni automatiche. ROI: meno errori manuali, più vendite.'
+          : 'E-commerce: we build high‑conversion stores with optimized checkout, payments, shipping and promos. ERP integration keeps catalog, orders and inventory synced in real time. Example: live stock updates and automatic promos. ROI: fewer manual errors and more sales.'
+      }
+      if (text.includes('ai') || text.includes('assistente') || text.includes('chatbot')) {
+        return isItalian
+          ? 'AI Assistenti: chatbot 24/7 su FAQ, catalogo e preventivi. Usa AI generativa per suggerire offerte, rispondere a email e fare triage ticket. Se la domanda è complessa, passa a un umano. Esempio: bot che risponde su tempi di consegna e crea ticket. Vantaggio: meno carico sul team, clienti soddisfatti.'
+          : 'AI Assistants: 24/7 chatbots for FAQ, catalog and quotes. Uses generative AI to suggest offers, answer emails and triage tickets, with human handoff for complex cases. Example: bot answers delivery times and creates a support ticket. Benefit: less team load, happier customers.'
+      }
+      if (text.includes('erp') || text.includes('gestionale') || text.includes('contabilità') || text.includes('magazzino')) {
+        return isItalian
+          ? 'ERP & Automazioni: organizziamo i processi (ordini→magazzino→fatture→contabilità) in un\'unica piattaforma. Ruoli, permessi, approvazioni automatiche, integrazioni con banca/fornitori. Esempio: ordine dal sito crea DDT e fattura, con alert al magazzino. Risultato: trasparenza e decisioni basate sui dati.'
+          : 'ERP & Automation: we centralize processes (orders→warehouse→invoicing→accounting) in one platform. Roles/permissions, automatic approvals, and integrations with banks/suppliers. Example: web order auto‑creates picking list and invoice with warehouse alerts. Result: transparency and data‑driven decisions.'
+      }
+    }
+    // If multiple services detected, let it fall through to general fallback or other handlers
   }
 
   const matched = knowledgeBase[language].find((topic) =>
