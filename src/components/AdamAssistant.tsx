@@ -553,6 +553,21 @@ Would you like me to prepare a tailored quote? Reply yes or no.`,
       exampleEN: 'interactive prototype to validate the purchase funnel before writing code.'
     })
   }
+  // Se l'utente chiede un sito/app generico (consulting) ma non ha menzionato UX esplicitamente, proponi anche UI/UX come supporto naturale
+  const alreadyAdded = (serviceName: string) => serviceMatches.some((s) => s.name === serviceName)
+  if (hasConsulting && !alreadyAdded('design')) {
+    serviceMatches.push({
+      name: 'design',
+      label: 'UI/UX + Responsive Design',
+      labelEN: 'UI/UX + Responsive Design',
+      desc: 'Prototipi cliccabili, design system, handoff pulito a sviluppo.',
+      descEN: 'Clickable prototypes, design system, clean dev handoff.',
+      why: 'assicura che il sito sia chiaro, usabile e pronto per lo sviluppo senza rework.',
+      whyEN: 'ensures the site is clear, usable, and ready for development with no rework.',
+      example: 'wireframe + prototipo interattivo per validare struttura e contenuti prima del codice.',
+      exampleEN: 'wireframe + interactive prototype to validate structure and content before coding.'
+    })
+  }
   if (['marketing', 'seo', 'ads', 'meta', 'google', 'advertising', 'pubblicità', 'promozione', 'visibility', 'visibilità'].some((k) => text.includes(k))) {
     serviceMatches.push({ 
       name: 'marketing', 
