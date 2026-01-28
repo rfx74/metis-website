@@ -1,3 +1,9 @@
+/*
+ * Metis Srl
+ * Via Giuseppe Garibaldi 3, 40124 Bologna (BO), Italia
+ * Email: info@metis-tech.it | Tel: +39 370 360 3909
+ */
+
 import Navigation from '@/components/Navigation'
 import HeroSection from '@/components/HeroSection'
 import ServicesSection from '@/components/ServicesSection'
