@@ -7,10 +7,65 @@ const OPEN_ADAM_EVENT = 'metis-open-adam'
 const DISABLE_KEY = 'adam-disabled'
 const SEEN_KEY = 'adam-seen'
 
+const normalizeAnswer = (value: string) =>
+  value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[^a-z0-9\s]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+const POSITIVE_RESPONSES = new Set([
+  'si',
+  'si grazie',
+  'certo',
+  'certamente',
+  'volentieri',
+  'assolutamente',
+  'va bene',
+  'va bene grazie',
+  'daccordo',
+  'ok',
+  'ok grazie',
+  'perfetto',
+  'yes',
+  'yes please',
+  'sure',
+  'sure thing',
+  'of course',
+  'yeah',
+  'yep',
+  'yup',
+  'absolutely'
+])
+
+const NEGATIVE_RESPONSES = new Set([
+  'no',
+  'no grazie',
+  'non ora',
+  'magari dopo',
+  'forse dopo',
+  'forse piu tardi',
+  'not now',
+  'maybe later',
+  'no thanks',
+  'no thank you',
+  'not yet',
+  'nope'
+])
+
 type Message = {
   id: string
   from: 'adam' | 'user'
   text: string
+  meta?: {
+    askedQuote?: boolean
+  }
+}
+
+type Reply = {
+  text: string
+  askQuote?: boolean
 }
 
 const copy = {
@@ -177,13 +232,13 @@ const knowledgeBase = {
   ]
 }
 
-function getReply(input: string, language: 'it' | 'en') {
+function getReply(input: string, language: 'it' | 'en'): Reply {
   const text = input.toLowerCase()
 
   const isItalian = language === 'it'
 
   if (text.includes('web') || text.includes('cerca sul web') || text.includes('search the web') || text.includes('google')) {
-    return copy[language].webSearch
+    return { text: copy[language].webSearch }
   }
 
   if (
@@ -193,8 +248,9 @@ function getReply(input: string, language: 'it' | 'en') {
     text.includes('all of your services') ||
     text.includes('all the services')
   ) {
-    return isItalian
-      ? `Ecco tutti i servizi Metis con esempi:
+    return {
+      text: isItalian
+        ? `Ecco tutti i servizi Metis con esempi:
 
 1) E-commerce: UX+checkout, pagamenti, integrazioni. Esempio: stock sincronizzato con ERP e checkout con upsell.
 2) AI Assistenti: chatbot 24/7 su FAQ/catalogo. Esempio: bot che risponde su consegne e apre ticket.
@@ -218,6 +274,7 @@ Suggerimento: clicca le card dei servizi per girarle e leggere i dettagli.`
 
 Useful links: Services /#services • Method /#method • Contact /#contact
 Tip: click service cards to flip and read details.`
+  }
   }
 
   // Keywords espanse per catturare più variazioni - ITALIANO
@@ -288,8 +345,9 @@ Tip: click service cards to flip and read details.`
   ].some((k) => text.includes(k))
 
   if ((hasEcommerce && hasERP && hasAI) || (wantsIntegration && (hasEcommerce || hasERP) && hasAI)) {
-    return isItalian
-      ? `Ottima domanda! Per il tuo progetto ti servono questi 3 servizi Metis:
+    return {
+      text: isItalian
+        ? `Ottima domanda! Per il tuo progetto ti servono questi 3 servizi Metis:
 
 **1) E-commerce personalizzato**
 Perché: ti serve un sito di vendita professionale con UX che converte, checkout sicuro, e pagamenti/spedizioni integrate.
@@ -306,8 +364,8 @@ Esempio: cliente chiede "dov'è il mio ordine?" → il bot recupera lo stato dal
 **Come funzionano insieme:**
 Cliente acquista → Ordine sincronizzato col gestionale → Stock aggiornato in tempo reale → Chatbot risponde su tracking e assistenza → Team vede tutto integrato in un'unica dashboard.
 
-Link: /#services per i dettagli • /#contact per un preventivo gratuito`
-      : `Great question! For your project you need these 3 Metis services:
+Vuoi che ti prepari un preventivo personalizzato? Rispondi sì o no.`
+    : `Great question! For your project you need these 3 Metis services:
 
 **1) Custom E-commerce**
 Why: you need a professional sales website with high-conversion UX, secure checkout, and integrated payments/shipping.
@@ -324,7 +382,9 @@ Example: customer asks "where's my order?" → bot retrieves status from ERP and
 **How they work together:**
 Customer buys → Order synced with ERP → Stock updated in real-time → Chatbot handles tracking and support → Team sees everything in one dashboard.
 
-Links: /#services for details • /#contact for a free quote`
+Would you like me to prepare a tailored quote? Reply yes or no.`,
+      askQuote: true
+    }
   }
 
   // Check for any two services combination with detailed response
@@ -423,16 +483,22 @@ Links: /#services for details • /#contact for a free quote`
   }
 
   if (serviceMatches.length >= 2) {
-    const list = serviceMatches.map((s, i) => {
-      if (isItalian) {
-        return `**${i + 1}) ${s.label}**\nCosa fa: ${s.desc}\nPerché: ${s.why}\nEsempio: ${s.example}`
-      }
-      return `**${i + 1}) ${s.labelEN}**\nWhat it does: ${s.descEN}\nWhy: ${s.whyEN}\nExample: ${s.exampleEN}`
-    }).join('\n\n')
-    
-    return isItalian
-      ? `Perfetto! Per il tuo progetto ti consiglio questi ${serviceMatches.length} servizi Metis:\n\n${list}\n\n**Come funzionano insieme:** questi servizi si integrano per creare un ecosistema completo e automatizzato.\n\nLink: /#services per i dettagli • /#contact per un preventivo`
-      : `Perfect! For your project I recommend these ${serviceMatches.length} Metis services:\n\n${list}\n\n**How they work together:** these services integrate to create a complete, automated ecosystem.\n\nLinks: /#services for details • /#contact for a quote`
+    const list = serviceMatches
+      .map((s, i) =>
+        isItalian
+          ? `**${i + 1}) ${s.label}**\nCosa fa: ${s.desc}\nPerché: ${s.why}\nEsempio: ${s.example}`
+          : `**${i + 1}) ${s.labelEN}**\nWhat it does: ${s.descEN}\nWhy: ${s.whyEN}\nExample: ${s.exampleEN}`
+      )
+      .join('\n\n')
+
+    const followUp = isItalian
+      ? '**Come funzionano insieme:** questi servizi si integrano per creare un ecosistema completo e automatizzato.\n\nVuoi che ti prepari un preventivo personalizzato? Rispondi sì o no.'
+      : '**How they work together:** these services integrate to create a complete, automated ecosystem.\n\nWould you like me to prepare a tailored quote? Reply yes or no.'
+
+    return {
+      text: `${isItalian ? `Perfetto! Per il tuo progetto ti consiglio questi ${serviceMatches.length} servizi Metis:` : `Perfect! For your project I recommend these ${serviceMatches.length} Metis services:`}\n\n${list}\n\n${followUp}`,
+      askQuote: true
+    }
   }
 
   // "Come funziona" check - ONLY if asking specifically about one service
@@ -440,19 +506,25 @@ Links: /#services for details • /#contact for a free quote`
     // Only respond with single service explanation if one primary service detected
     if (primaryServicesCount <= 1) {
       if (text.includes('e-commerce') || text.includes('vendere online') || text.includes('shop')) {
-        return isItalian
-          ? 'E-commerce: creiamo siti di vendita con UX che converte, checkout ottimizzato, pagamenti, spedizioni e promo. Integrazione con ERP per sincronizzare catalogo, ordini e inventario in tempo reale. Esempio: stock aggiornato live e promozioni automatiche. ROI: meno errori manuali, più vendite.'
-          : 'E-commerce: we build high‑conversion stores with optimized checkout, payments, shipping and promos. ERP integration keeps catalog, orders and inventory synced in real time. Example: live stock updates and automatic promos. ROI: fewer manual errors and more sales.'
+          return {
+            text: isItalian
+              ? 'E-commerce: creiamo siti di vendita con UX che converte, checkout ottimizzato, pagamenti, spedizioni e promo. Integrazione con ERP per sincronizzare catalogo, ordini e inventario in tempo reale. Esempio: stock aggiornato live e promozioni automatiche. ROI: meno errori manuali, più vendite.'
+              : 'E-commerce: we build high‑conversion stores with optimized checkout, payments, shipping and promos. ERP integration keeps catalog, orders and inventory synced in real time. Example: live stock updates and automatic promos. ROI: fewer manual errors and more sales.'
+          }
       }
       if (text.includes('ai') || text.includes('assistente') || text.includes('chatbot')) {
-        return isItalian
-          ? 'AI Assistenti: chatbot 24/7 su FAQ, catalogo e preventivi. Usa AI generativa per suggerire offerte, rispondere a email e fare triage ticket. Se la domanda è complessa, passa a un umano. Esempio: bot che risponde su tempi di consegna e crea ticket. Vantaggio: meno carico sul team, clienti soddisfatti.'
-          : 'AI Assistants: 24/7 chatbots for FAQ, catalog and quotes. Uses generative AI to suggest offers, answer emails and triage tickets, with human handoff for complex cases. Example: bot answers delivery times and creates a support ticket. Benefit: less team load, happier customers.'
+          return {
+            text: isItalian
+              ? 'AI Assistenti: chatbot 24/7 su FAQ, catalogo e preventivi. Usa AI generativa per suggerire offerte, rispondere a email e fare triage ticket. Se la domanda è complessa, passa a un umano. Esempio: bot che risponde su tempi di consegna e crea ticket. Vantaggio: meno carico sul team, clienti soddisfatti.'
+              : 'AI Assistants: 24/7 chatbots for FAQ, catalog and quotes. Uses generative AI to suggest offers, answer emails and triage tickets, with human handoff for complex cases. Example: bot answers delivery times and creates a support ticket. Benefit: less team load, happier customers.'
+          }
       }
       if (text.includes('erp') || text.includes('gestionale') || text.includes('contabilità') || text.includes('magazzino')) {
-        return isItalian
-          ? 'ERP & Automazioni: organizziamo i processi (ordini→magazzino→fatture→contabilità) in un\'unica piattaforma. Ruoli, permessi, approvazioni automatiche, integrazioni con banca/fornitori. Esempio: ordine dal sito crea DDT e fattura, con alert al magazzino. Risultato: trasparenza e decisioni basate sui dati.'
-          : 'ERP & Automation: we centralize processes (orders→warehouse→invoicing→accounting) in one platform. Roles/permissions, automatic approvals, and integrations with banks/suppliers. Example: web order auto‑creates picking list and invoice with warehouse alerts. Result: transparency and data‑driven decisions.'
+          return {
+            text: isItalian
+              ? 'ERP & Automazioni: organizziamo i processi (ordini→magazzino→fatture→contabilità) in un\'unica piattaforma. Ruoli, permessi, approvazioni automatiche, integrazioni con banca/fornitori. Esempio: ordine dal sito crea DDT e fattura, con alert al magazzino. Risultato: trasparenza e decisioni basate sui dati.'
+              : 'ERP & Automation: we centralize processes (orders→warehouse→invoicing→accounting) in one platform. Roles/permissions, automatic approvals, and integrations with banks/suppliers. Example: web order auto‑creates picking list and invoice with warehouse alerts. Result: transparency and data‑driven decisions.'
+          }
       }
     }
     // If multiple services detected, let it fall through to general fallback or other handlers
@@ -461,15 +533,19 @@ Links: /#services for details • /#contact for a free quote`
   const matched = knowledgeBase[language].find((topic) =>
     topic.keywords.some((keyword) => text.includes(keyword))
   )
-  if (matched) return matched.response
-
-  if (text.includes('suggeriscimi') || text.includes('consigliami') || text.includes('quali sono') || text.includes('che cosa') || text.includes('servizio') || text.includes('servizi') || text.includes('services')) {
-    return isItalian
-      ? 'Ecco i 7 servizi Metis:\n\n1) E-commerce: UX+checkout, pagamenti, integrazioni\n2) AI Assistenti: Chatbot 24/7 su FAQ/catalogo\n3) ERP & Automazioni: Processi end-to-end\n4) UI/UX Design: Prototipi e design system\n5) Marketing: SEO+Ads, landing, tracking\n6) IoT: Backend, device management, dati real-time\n7) 1H Consulting: Review e roadmap\n\nLink utili: Servizi /#services • Metodo /#method • Contatti /#contact\nSuggerimento: clicca le card dei servizi per girarle e leggere i dettagli.'
-      : 'Here are the 7 Metis services:\n\n1) E-commerce: UX+checkout, payments, integrations\n2) AI Assistants: 24/7 chatbot for FAQ/catalog\n3) ERP & Automation: end‑to‑end processes\n4) UI/UX Design: prototypes and design systems\n5) Marketing: SEO+Ads, landing, tracking\n6) IoT: backend, device management, real‑time data\n7) 1H Consulting: review and roadmap\n\nUseful links: Services /#services • Method /#method • Contact /#contact\nTip: click service cards to flip and read details.'
+  if (matched) {
+    return { text: matched.response }
   }
 
-  return copy[language].generalFallback
+  if (text.includes('suggeriscimi') || text.includes('consigliami') || text.includes('quali sono') || text.includes('che cosa') || text.includes('servizio') || text.includes('servizi') || text.includes('services')) {
+    return {
+      text: isItalian
+        ? 'Ecco i 7 servizi Metis:\n\n1) E-commerce: UX+checkout, pagamenti, integrazioni\n2) AI Assistenti: Chatbot 24/7 su FAQ/catalogo\n3) ERP & Automazioni: Processi end-to-end\n4) UI/UX Design: Prototipi e design system\n5) Marketing: SEO+Ads, landing, tracking\n6) IoT: Backend, device management, dati real-time\n7) 1H Consulting: Review e roadmap\n\nLink utili: Servizi /#services • Metodo /#method • Contatti /#contact\nSuggerimento: clicca le card dei servizi per girarle e leggere i dettagli.'
+        : 'Here are the 7 Metis services:\n\n1) E-commerce: UX+checkout, payments, integrations\n2) AI Assistants: 24/7 chatbot for FAQ/catalog\n3) ERP & Automation: end‑to‑end processes\n4) UI/UX Design: prototypes and design systems\n5) Marketing: SEO+Ads, landing, tracking\n6) IoT: backend, device management, real‑time data\n7) 1H Consulting: review and roadmap\n\nUseful links: Services /#services • Method /#method • Contact /#contact\nTip: click service cards to flip and read details.'
+    }
+  }
+
+  return { text: copy[language].generalFallback }
 }
 
 export default function AdamAssistant() {
@@ -478,6 +554,7 @@ export default function AdamAssistant() {
   const [disabled, setDisabled] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
+  const [awaitingQuote, setAwaitingQuote] = useState(false)
   const bottomRef = useRef<HTMLDivElement | null>(null)
   const messagesContainerRef = useRef<HTMLDivElement | null>(null)
   const messagesRef = useRef<Message[]>([])
@@ -533,6 +610,24 @@ export default function AdamAssistant() {
     }
   }, [language])
 
+  const appendAdamMessage = (text: string, askQuote = false) => {
+    const message: Message = {
+      id: `${Date.now()}-adam`,
+      from: 'adam',
+      text,
+      ...(askQuote ? { meta: { askedQuote: true } } : {})
+    }
+
+    setMessages((prev) => [...prev, message])
+
+    if (askQuote) {
+      setAwaitingQuote(true)
+    }
+  }
+
+  const isAffirmative = (value: string) => POSITIVE_RESPONSES.has(normalizeAnswer(value))
+  const isNegative = (value: string) => NEGATIVE_RESPONSES.has(normalizeAnswer(value))
+
   const sendMessage = () => {
     const trimmed = input.trim()
     if (!trimmed) return
@@ -543,14 +638,37 @@ export default function AdamAssistant() {
       text: trimmed,
     }
 
-    const reply: Message = {
-      id: `${Date.now()}-adam`,
-      from: 'adam',
-      text: getReply(trimmed, language),
+    setMessages((prev) => [...prev, userMessage])
+    setInput('')
+
+    const isItalian = language === 'it'
+
+    if (awaitingQuote) {
+      if (isAffirmative(trimmed)) {
+        appendAdamMessage(
+          isItalian
+            ? 'Perfetto! Inviaci una mail a info@metis-tech.it con una breve descrizione del progetto (settore, obiettivi, budget indicativo) e ti rispondiamo entro 24 ore.'
+            : 'Great! Please send an email to info@metis-tech.it with a short project summary (industry, goals, indicative budget) and we will reply within 24 hours.'
+        )
+        setAwaitingQuote(false)
+        return
+      }
+
+      if (isNegative(trimmed)) {
+        appendAdamMessage(
+          isItalian
+            ? 'Nessun problema, resto a disposizione per qualsiasi altra domanda.'
+            : 'No problem, I am here for any other questions you may have.'
+        )
+        setAwaitingQuote(false)
+        return
+      }
+
+      setAwaitingQuote(false)
     }
 
-    setMessages((prev) => [...prev, userMessage, reply])
-    setInput('')
+    const reply = getReply(trimmed, language)
+    appendAdamMessage(reply.text, reply.askQuote === true)
   }
 
   const disableAssistant = () => {
