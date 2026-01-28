@@ -303,6 +303,7 @@ export default function AdamAssistant() {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const bottomRef = useRef<HTMLDivElement | null>(null)
+  const messagesContainerRef = useRef<HTMLDivElement | null>(null)
   const messagesRef = useRef<Message[]>([])
 
   useEffect(() => {
@@ -333,8 +334,20 @@ export default function AdamAssistant() {
     }
   }, [language])
 
+  // Scroll to top when opening, to bottom when new messages arrive
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (open && messagesContainerRef.current) {
+      // Small delay to ensure DOM is rendered
+      setTimeout(() => {
+        if (messages.length <= 1) {
+          // Initial open: scroll to top
+          messagesContainerRef.current?.scrollTo({ top: 0, behavior: 'instant' })
+        } else {
+          // New messages: scroll to bottom
+          bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+        }
+      }, 50)
+    }
   }, [messages, open])
 
   useEffect(() => {
@@ -407,7 +420,7 @@ export default function AdamAssistant() {
       )}
 
       {open && (
-        <div className="fixed right-3 bottom-20 sm:right-4 sm:bottom-24 z-[70] w-[min(92vw,380px)] sm:w-[min(92vw,390px)] max-h-[65vh] sm:max-h-[78vh] rounded-[28px] border border-white/15 bg-gradient-to-br from-[#0b1220]/95 via-[#111827]/95 to-[#0f172a]/95 text-white shadow-[0_24px_80px_rgba(15,23,42,0.65)] backdrop-blur-xl overflow-hidden flex flex-col">
+        <div className="fixed right-3 bottom-20 sm:right-4 sm:bottom-24 z-[70] w-[min(92vw,380px)] sm:w-[min(92vw,390px)] h-[65vh] sm:h-[78vh] max-h-[500px] sm:max-h-[600px] rounded-[28px] border border-white/15 bg-gradient-to-br from-[#0b1220]/95 via-[#111827]/95 to-[#0f172a]/95 text-white shadow-[0_24px_80px_rgba(15,23,42,0.65)] backdrop-blur-xl overflow-hidden flex flex-col">
           <div className="absolute -top-24 -right-24 h-56 w-56 rounded-full bg-cyan-500/20 blur-3xl" aria-hidden="true" />
           <div className="absolute -bottom-28 -left-24 h-64 w-64 rounded-full bg-fuchsia-500/15 blur-3xl" aria-hidden="true" />
           <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between sticky top-0 z-10 bg-[#0b1220]/90 backdrop-blur-xl">
@@ -452,7 +465,7 @@ export default function AdamAssistant() {
             </div>
           </div>
 
-          <div className="px-5 py-4 space-y-3 text-sm flex-1 min-h-0 overflow-y-auto">
+          <div ref={messagesContainerRef} className="px-5 py-4 space-y-3 text-sm flex-1 min-h-[200px] overflow-y-auto overscroll-contain">
             {messages.length === 0 ? (
               <div className="space-y-3 text-white/80">
                 <p>{copy[language].welcome}</p>
