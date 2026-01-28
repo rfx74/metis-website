@@ -391,6 +391,14 @@ Tip: click service cards to flip and read details.`
     'sito', 'sito web', 'sito internet', 'sito vetrina', 'vetrina online', 'sito aziendale', 'website', 'web site'
   ]
 
+  const customDevKeywordsIT = [
+    'sito', 'sito web', 'sito internet', 'sito vetrina', 'sito professionale', 'sito aziendale', 'sito brand', 'sito istituzionale',
+    'portale', 'piattaforma', 'piattaforma web', 'web app', 'app web', 'portale clienti', 'area riservata', 'intranet', 'dashboard',
+    'software su misura', 'sviluppo software', 'sviluppo web', 'sviluppo sito', 'sviluppo portale', 'sviluppo piattaforma',
+    'landing page', 'pagina di vendita', 'squeeze page',
+    'sito con assistente', 'assistente sul sito', 'chatbot sul sito'
+  ]
+
   // Keywords espanse - ENGLISH
   const ecommerceKeywordsEN = [
     'ecommerce', 'e-commerce', 'shop', 'sell online', 'store', 'online store',
@@ -427,16 +435,22 @@ Tip: click service cards to flip and read details.`
     'website', 'web site', 'site', 'corporate site', 'business site', 'brochure site'
   ]
 
-  const hasEcommerce = ecommerceKeywordsIT.some((k) => text.includes(k)) || ecommerceKeywordsEN.some((k) => text.includes(k))
-    
-  const hasERP = erpKeywordsIT.some((k) => text.includes(k)) || erpKeywordsEN.some((k) => text.includes(k))
-    
-  const hasAI = aiKeywordsIT.some((k) => text.includes(k)) || aiKeywordsEN.some((k) => text.includes(k))
+  const customDevKeywordsEN = [
+    'website', 'web site', 'business website', 'company site', 'corporate site', 'marketing site', 'brochure site', 'brand site',
+    'web app', 'webapp', 'portal', 'client portal', 'platform', 'web platform', 'member area', 'dashboard', 'intranet',
+    'custom software', 'custom development', 'web development', 'site development', 'portal development', 'platform development',
+    'landing page', 'sales page', 'squeeze page',
+    'site with assistant', 'assistant on the site', 'chatbot on the site'
+  ]
 
+  const hasEcommerce = ecommerceKeywordsIT.some((k) => text.includes(k)) || ecommerceKeywordsEN.some((k) => text.includes(k))
+  const hasERP = erpKeywordsIT.some((k) => text.includes(k)) || erpKeywordsEN.some((k) => text.includes(k))
+  const hasAI = aiKeywordsIT.some((k) => text.includes(k)) || aiKeywordsEN.some((k) => text.includes(k))
+  const hasCustomDev = customDevKeywordsIT.some((k) => text.includes(k)) || customDevKeywordsEN.some((k) => text.includes(k))
   const hasConsulting = consultingKeywordsIT.some((k) => text.includes(k)) || consultingKeywordsEN.some((k) => text.includes(k))
 
   // If user asks for alternative service (blog, app, video, etc.), suggest 1H Consulting
-  if (hasConsulting && !hasEcommerce && !hasERP && !hasAI) {
+  if (hasConsulting && !hasEcommerce && !hasERP && !hasAI && !hasCustomDev) {
     return {
       text: isItalian
         ? `Mi sembra una richiesta interessante! Per un progetto come questo, consiglio una **1H Consulting** con il nostro team per approfondire il tuo progetto, definire la soluzione migliore e la roadmap.\n\nVuoi che ti metti in contatto con noi? Rispondi sì o no.`
@@ -445,7 +459,7 @@ Tip: click service cards to flip and read details.`
     }
   }
 
-  const primaryServicesCount = [hasEcommerce, hasERP, hasAI].filter(Boolean).length
+  const primaryServicesCount = [hasEcommerce, hasERP, hasAI, hasCustomDev].filter(Boolean).length
 
   // Check for integrated/combined services request (both IT and EN)
   const wantsIntegration = [
@@ -540,6 +554,19 @@ Would you like me to prepare a tailored quote? Reply yes or no.`,
       exampleEN: 'order → automatic picking list → invoice generated → stock updated → customer notified.'
     })
   }
+  if (hasCustomDev) {
+    serviceMatches.push({
+      name: 'custom-dev',
+      label: 'Sviluppo web/app su misura',
+      labelEN: 'Custom web/app development',
+      desc: 'Siti, web app e portali con performance, SEO tecnica e sicurezza.',
+      descEN: 'Websites, web apps, and portals with performance, technical SEO, and security.',
+      why: 'ti serve una base solida, veloce e integrata per il tuo progetto digitale.',
+      whyEN: 'you need a solid, fast, integrated foundation for your digital project.',
+      example: 'sito o web app con pagamenti, login, aree riservate e integrazioni API.',
+      exampleEN: 'website or web app with payments, login, private areas, and API integrations.'
+    })
+  }
   if (['ux', 'ui', 'design', 'interfaccia', 'prototipo', 'grafica', 'interface', 'prototype', 'graphics'].some((k) => text.includes(k))) {
     serviceMatches.push({ 
       name: 'design', 
@@ -623,6 +650,13 @@ Would you like me to prepare a tailored quote? Reply yes or no.`,
     })
   }
 
+  const priorityOrder = ['custom-dev', 'ecommerce', 'ai', 'erp', 'design', 'marketing', 'consulting', 'consulting-keywords', 'iot']
+  serviceMatches.sort((a, b) => {
+    const ia = priorityOrder.indexOf(a.name)
+    const ib = priorityOrder.indexOf(b.name)
+    return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib)
+  })
+
   if (serviceMatches.length >= 2) {
     const list = serviceMatches
       .map((s, i) =>
@@ -681,8 +715,8 @@ Would you like me to prepare a tailored quote? Reply yes or no.`,
   if (text.includes('suggeriscimi') || text.includes('consigliami') || text.includes('quali sono') || text.includes('che cosa') || text.includes('servizio') || text.includes('servizi') || text.includes('services')) {
     return {
       text: isItalian
-        ? 'Ecco i 7 servizi Metis:\n\n1) E-commerce: UX+checkout, pagamenti, integrazioni\n2) AI Assistenti: Chatbot 24/7 su FAQ/catalogo\n3) ERP & Automazioni: Processi end-to-end\n4) UI/UX Design: Prototipi e design system\n5) Marketing: SEO+Ads, landing, tracking\n6) IoT: Backend, device management, dati real-time\n7) 1H Consulting: Review e roadmap\n\nLink utili: Servizi /#services • Metodo /#method • Contatti /#contact\nSuggerimento: clicca le card dei servizi per girarle e leggere i dettagli.'
-        : 'Here are the 7 Metis services:\n\n1) E-commerce: UX+checkout, payments, integrations\n2) AI Assistants: 24/7 chatbot for FAQ/catalog\n3) ERP & Automation: end‑to‑end processes\n4) UI/UX Design: prototypes and design systems\n5) Marketing: SEO+Ads, landing, tracking\n6) IoT: backend, device management, real‑time data\n7) 1H Consulting: review and roadmap\n\nUseful links: Services /#services • Method /#method • Contact /#contact\nTip: click service cards to flip and read details.'
+        ? 'Ecco gli 8 servizi Metis:\n\n1) Sviluppo web/app: siti, portali, web app\n2) E-commerce: UX+checkout, pagamenti, integrazioni\n3) AI Assistenti: Chatbot 24/7 su FAQ/catalogo\n4) ERP & Automazioni: Processi end-to-end\n5) UI/UX Design: Prototipi e design system\n6) Marketing: SEO+Ads, landing, tracking\n7) IoT: Backend, device management, dati real-time\n8) 1H Consulting: Review e roadmap\n\nLink utili: Servizi /#services • Metodo /#method • Contatti /#contact\nSuggerimento: clicca le card dei servizi per girarle e leggere i dettagli.'
+        : 'Here are the 8 Metis services:\n\n1) Custom web/app: sites, portals, web apps\n2) E-commerce: UX+checkout, payments, integrations\n3) AI Assistants: 24/7 chatbot for FAQ/catalog\n4) ERP & Automation: end‑to‑end processes\n5) UI/UX Design: prototypes and design systems\n6) Marketing: SEO+Ads, landing, tracking\n7) IoT: backend, device management, real‑time data\n8) 1H Consulting: review and roadmap\n\nUseful links: Services /#services • Method /#method • Contact /#contact\nTip: click service cards to flip and read details.'
     }
   }
 

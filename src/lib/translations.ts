@@ -39,6 +39,18 @@ export const translations = {
         backDescription: 'E-commerce su misura, veloce e orientato alla conversione, con integrazioni complete e base pronta a scalare.'
       },
 
+      customDev: {
+        title: 'Sviluppo web/app personalizzato',
+        price: '€ 5.500,00',
+        bullets: [
+          'Siti, web app e portali su misura',
+          'Performance, SEO tecnica, sicurezza',
+          'API e integrazioni (pagamenti, CRM/ERP)',
+          'Mobile-first, accessibilità, analytics'
+        ],
+        backDescription: 'Realizziamo siti, web app e software custom con architettura solida, integrazioni e rilascio pronto a crescere.'
+      },
+
       design: {
         title: 'UI/UX + Responsive Web & APP Design',
         price: '€ 950,00',
@@ -262,6 +274,18 @@ export const translations = {
         price: '€ 5,000.00',
         bullets: ['Conversion-focused UX + checkout', 'Payments, shipping, promos', 'ERP/CRM/logistics integrations', 'SEO, performance, tracking'],
         backDescription: 'Fast, conversion-first e-commerce tailored to your business, with solid integrations and room to scale.'
+      },
+
+      customDev: {
+        title: 'Custom web & app development',
+        price: '€ 5,500.00',
+        bullets: [
+          'Websites, web apps, portals built-to-fit',
+          'Performance, technical SEO, security',
+          'APIs & integrations (payments, CRM/ERP)',
+          'Mobile-first, accessibility, analytics ready'
+        ],
+        backDescription: 'We build websites, web apps, and custom software with solid architecture, integrations, and growth-ready delivery.'
       },
 
       design: {

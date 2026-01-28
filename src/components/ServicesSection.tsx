@@ -31,6 +31,11 @@ export default function ServicesSection() {
 
   const services: ServiceCard[] = [
     {
+      ...(t.services as any).customDev,
+      imageSrc: '/servpers.webp',
+      imageAlt: 'Sviluppo personalizzato'
+    },
+    {
       ...t.services.ecommerce,
       imageSrc: '/e-commerce.webp',
       imageAlt: 'e-commerce'
