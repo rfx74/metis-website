@@ -386,7 +386,9 @@ Tip: click service cards to flip and read details.`
     'video', 'videoblog', 'video blog', 'vlog', 'youtube',
     'app', 'applicazione', 'mobile app', 'app mobile',
     'portale', 'piattaforma', 'web app',
-    'landing page', 'squeeze page', 'sales page'
+    'landing page', 'squeeze page', 'sales page',
+    // siti generici
+    'sito', 'sito web', 'sito internet', 'sito vetrina', 'vetrina online', 'sito aziendale', 'website', 'web site'
   ]
 
   // Keywords espanse - ENGLISH
@@ -420,7 +422,9 @@ Tip: click service cards to flip and read details.`
     'video', 'videoblog', 'video blog', 'vlog', 'youtube',
     'app', 'application', 'mobile app', 'mobile application',
     'portal', 'platform', 'web app',
-    'landing page', 'squeeze page', 'sales page'
+    'landing page', 'squeeze page', 'sales page',
+    // generic websites
+    'website', 'web site', 'site', 'corporate site', 'business site', 'brochure site'
   ]
 
   const hasEcommerce = ecommerceKeywordsIT.some((k) => text.includes(k)) || ecommerceKeywordsEN.some((k) => text.includes(k))
@@ -586,6 +590,21 @@ Would you like me to prepare a tailored quote? Reply yes or no.`,
       whyEN: 'helps you clarify priorities and next steps with an expert.',
       example: 'review dell\'architettura attuale e piano d\'azione per i prossimi 3 mesi.',
       exampleEN: 'review of current architecture and action plan for the next 3 months.'
+    })
+  }
+
+  // Se l'utente chiede un sito generico, blog, app, portale, landing ecc. (consultingKeywords), aggiungi 1H Consulting come servizio rilevante
+  if (hasConsulting) {
+    serviceMatches.push({
+      name: 'consulting-keywords',
+      label: '1H Consulting',
+      labelEN: '1H Consulting',
+      desc: 'Una call per definire obiettivi, contenuti e roadmap del tuo sito/app.',
+      descEN: 'A call to define goals, content, and the roadmap for your site/app.',
+      why: 'allinea requisiti e priorità prima di partire con design e sviluppo.',
+      whyEN: 'aligns requirements and priorities before starting design and development.',
+      example: 'esempi di sitemap, tono di voce e feature principali per il lancio.',
+      exampleEN: 'examples of sitemap, tone of voice, and key features for launch.'
     })
   }
 
