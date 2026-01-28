@@ -241,45 +241,212 @@ Tip: click service cards to flip and read details.`
       : 'I can explain any service. Tell me which one you need (e-commerce, AI, ERP, design, marketing, IoT) and I will detail how it works and why it matters.'
   }
 
-  const hasEcommerce = ['ecommerce', 'e-commerce', 'shop', 'vendere online', 'store', 'vendita online'].some((k) => text.includes(k))
-  const hasERP = ['erp', 'gestionale', 'contabilità', 'magazzino', 'processi'].some((k) => text.includes(k))
-  const hasAI = ['ai', 'chatbot', 'assistente', 'intelligenza artificiale'].some((k) => text.includes(k))
+  // Keywords espanse per catturare più variazioni - ITALIANO
+  const ecommerceKeywordsIT = [
+    'ecommerce', 'e-commerce', 'shop', 'vendere online', 'store', 'vendita online',
+    'sito di vendita', 'sito vendita', 'negozio online', 'negozio digitale',
+    'vendite online', 'commercio elettronico', 'piattaforma vendita', 'catalogo online',
+    'carrello', 'checkout', 'pagamenti online', 'spedizioni', 'ordini online'
+  ]
+  
+  const erpKeywordsIT = [
+    'erp', 'gestionale', 'contabilità', 'magazzino', 'processi', 'automazione',
+    'magazzino digitale', 'inventario', 'fatturazione', 'fatture', 'ddt',
+    'ordini', 'flussi', 'workflow', 'integrazione', 'sincronizzazione',
+    'gestione ordini', 'gestione magazzino', 'stock', 'giacenze', 'picking',
+    'logistica', 'backoffice', 'back-office', 'amministrazione', 'contabile'
+  ]
+  
+  const aiKeywordsIT = [
+    'ai', 'chatbot', 'assistente', 'intelligenza artificiale', 'bot',
+    'customer care', 'customercare', 'assistenza clienti', 'supporto clienti',
+    'help desk', 'helpdesk', 'ticket', 'faq', 'risposte automatiche',
+    'assistenza', 'supporto', 'care', 'servizio clienti', 'post-vendita',
+    'post vendita', 'pre-vendita', 'pre vendita', 'chat', 'risposta automatica'
+  ]
+
+  // Keywords espanse - ENGLISH
+  const ecommerceKeywordsEN = [
+    'ecommerce', 'e-commerce', 'shop', 'sell online', 'store', 'online store',
+    'online shop', 'web store', 'digital store', 'selling online', 'sales website',
+    'shopping cart', 'checkout', 'online payments', 'shipping', 'online orders',
+    'product catalog', 'online catalog', 'digital commerce', 'retail'
+  ]
+  
+  const erpKeywordsEN = [
+    'erp', 'management system', 'accounting', 'warehouse', 'processes', 'automation',
+    'digital warehouse', 'inventory', 'invoicing', 'invoices', 'orders',
+    'workflow', 'integration', 'synchronization', 'sync', 'order management',
+    'warehouse management', 'stock', 'stock management', 'picking', 'logistics',
+    'backoffice', 'back-office', 'administration', 'business management'
+  ]
+  
+  const aiKeywordsEN = [
+    'ai', 'chatbot', 'assistant', 'artificial intelligence', 'bot',
+    'customer care', 'customercare', 'customer service', 'customer support',
+    'help desk', 'helpdesk', 'ticket', 'faq', 'automatic responses',
+    'support', 'care', 'post-sale', 'post sale', 'pre-sale', 'pre sale',
+    'chat', 'automatic reply', 'virtual assistant', 'smart assistant'
+  ]
+
+  const hasEcommerce = isItalian 
+    ? ecommerceKeywordsIT.some((k) => text.includes(k))
+    : ecommerceKeywordsEN.some((k) => text.includes(k))
+    
+  const hasERP = isItalian
+    ? erpKeywordsIT.some((k) => text.includes(k))
+    : erpKeywordsEN.some((k) => text.includes(k))
+    
+  const hasAI = isItalian
+    ? aiKeywordsIT.some((k) => text.includes(k))
+    : aiKeywordsEN.some((k) => text.includes(k))
 
   if ((hasEcommerce && hasERP && hasAI) || (text.includes('integrato') && (hasEcommerce || hasERP) && hasAI)) {
     return isItalian
-      ? 'Perfetto! Per un sito di vendita integrato al gestionale + assistente ti consiglio questa combo:\n\n1) *E-commerce personalizzato*: UX che vende, checkout sicuro, pagamenti e spedizioni integrate\n2) *ERP & Automazioni*: sincronizza ordini dal sito al gestionale, aggiorna catalogo e inventario in tempo reale\n3) *AI Assistenti*: chatbot 24/7 per prodotti e assistenza pre/post-vendita\n\nEsempio: cliente compra → ordine va in ERP → stock aggiornato → chatbot risponde su tracking → team vede tutto sincronizzato.\n\nVuoi che ti apra la sezione Servizi per i dettagli?'
-      : 'Great! For a store integrated with ERP + assistant, I recommend this combo:\n\n1) *Custom e-commerce*: high‑conversion UX, secure checkout, integrated payments and shipping\n2) *ERP & Automation*: syncs orders from the site to the ERP, updates catalog and inventory in real time\n3) *AI Assistants*: 24/7 bot for product questions and pre/post‑sales support\n\nExample: customer buys → order hits ERP → stock updates → chatbot answers tracking → team sees everything synced.\n\nWant me to open the Services section?'
+      ? `Ottima domanda! Per il tuo progetto ti servono questi 3 servizi Metis:
+
+**1) E-commerce personalizzato**
+Perché: ti serve un sito di vendita professionale con UX che converte, checkout sicuro, e pagamenti/spedizioni integrate.
+Esempio: catalogo prodotti con filtri smart, carrello persistente, checkout in 3 click con PayPal/Stripe/carta.
+
+**2) ERP & Automazioni (Magazzino Digitale)**
+Perché: serve sincronizzare ordini, stock e fatturazione in tempo reale col gestionale. Niente più errori manuali.
+Esempio: cliente compra → ordine va automaticamente nel gestionale → stock aggiornato → DDT e fattura generati → notifica al magazzino per il picking.
+
+**3) AI Assistenti (Customer Care)**
+Perché: un chatbot 24/7 risponde a domande su prodotti, ordini, tracking, resi. Riduce il carico sul team e migliora la customer experience.
+Esempio: cliente chiede "dov'è il mio ordine?" → il bot recupera lo stato dal gestionale e risponde subito con link tracking.
+
+**Come funzionano insieme:**
+Cliente acquista → Ordine sincronizzato col gestionale → Stock aggiornato in tempo reale → Chatbot risponde su tracking e assistenza → Team vede tutto integrato in un'unica dashboard.
+
+Link: /#services per i dettagli • /#contact per un preventivo gratuito`
+      : `Great question! For your project you need these 3 Metis services:
+
+**1) Custom E-commerce**
+Why: you need a professional sales website with high-conversion UX, secure checkout, and integrated payments/shipping.
+Example: product catalog with smart filters, persistent cart, 3-click checkout with PayPal/Stripe/card.
+
+**2) ERP & Automation (Digital Warehouse)**
+Why: you need to sync orders, stock, and invoicing in real-time with your management system. No more manual errors.
+Example: customer buys → order goes automatically to ERP → stock updated → invoice generated → warehouse notified for picking.
+
+**3) AI Assistants (Customer Care)**
+Why: a 24/7 chatbot answers questions about products, orders, tracking, returns. Reduces team workload and improves customer experience.
+Example: customer asks "where's my order?" → bot retrieves status from ERP and replies instantly with tracking link.
+
+**How they work together:**
+Customer buys → Order synced with ERP → Stock updated in real-time → Chatbot handles tracking and support → Team sees everything in one dashboard.
+
+Links: /#services for details • /#contact for a free quote`
   }
 
-  const serviceMatches: { name: string; label: string; desc: string }[] = []
+  // Check for any two services combination with detailed response
+  const serviceMatches: { name: string; label: string; labelEN: string; desc: string; descEN: string; why: string; whyEN: string; example: string; exampleEN: string }[] = []
 
   if (hasEcommerce) {
-    serviceMatches.push({ name: 'ecommerce', label: 'Soluzioni e-commerce personalizzata', desc: 'UX + checkout che converte, pagamenti, spedizioni, integrazioni ERP/CRM.' })
+    serviceMatches.push({ 
+      name: 'ecommerce', 
+      label: 'E-commerce personalizzato', 
+      labelEN: 'Custom E-commerce',
+      desc: 'UX che converte, checkout sicuro, pagamenti e spedizioni integrate, integrazioni ERP/CRM.',
+      descEN: 'High-conversion UX, secure checkout, integrated payments and shipping, ERP/CRM integrations.',
+      why: 'ti permette di vendere online con un\'esperienza utente professionale che massimizza le conversioni.',
+      whyEN: 'allows you to sell online with a professional user experience that maximizes conversions.',
+      example: 'catalogo prodotti, carrello persistente, checkout rapido, notifiche ordine automatiche.',
+      exampleEN: 'product catalog, persistent cart, quick checkout, automatic order notifications.'
+    })
   }
   if (hasAI) {
-    serviceMatches.push({ name: 'ai', label: 'AI Assistenti', desc: 'Chatbot 24/7 su FAQ/catalogo, copilot per offerte/email, triage ticket.' })
+    serviceMatches.push({ 
+      name: 'ai', 
+      label: 'AI Assistenti', 
+      labelEN: 'AI Assistants',
+      desc: 'Chatbot 24/7 per FAQ, catalogo, ordini. Copilot per email/offerte. Triage ticket con handoff umano.',
+      descEN: '24/7 chatbot for FAQ, catalog, orders. Copilot for emails/quotes. Ticket triage with human handoff.',
+      why: 'automatizza il customer care, risponde istantaneamente e libera il team dalle domande ripetitive.',
+      whyEN: 'automates customer care, responds instantly, and frees your team from repetitive questions.',
+      example: 'bot che risponde su tracking, tempi consegna, disponibilità prodotti, e apre ticket per casi complessi.',
+      exampleEN: 'bot that answers about tracking, delivery times, product availability, and creates tickets for complex cases.'
+    })
   }
   if (hasERP) {
-    serviceMatches.push({ name: 'erp', label: 'ERP & Automazioni', desc: 'Ordini→magazzino→fatture, ruoli/permessi, integrazioni tra reparti.' })
+    serviceMatches.push({ 
+      name: 'erp', 
+      label: 'ERP & Automazioni', 
+      labelEN: 'ERP & Automation',
+      desc: 'Gestione ordini, magazzino digitale, fatturazione, sincronizzazione tra sistemi.',
+      descEN: 'Order management, digital warehouse, invoicing, system synchronization.',
+      why: 'centralizza i processi, elimina errori manuali e ti dà visibilità in tempo reale su tutto il business.',
+      whyEN: 'centralizes processes, eliminates manual errors, and gives you real-time visibility across your business.',
+      example: 'ordine → picking list automatica → fattura generata → stock aggiornato → notifica al cliente.',
+      exampleEN: 'order → automatic picking list → invoice generated → stock updated → customer notified.'
+    })
   }
-  if (['ux', 'ui', 'design', 'interfaccia', 'prototipo'].some((k) => text.includes(k))) {
-    serviceMatches.push({ name: 'design', label: 'UI/UX + Responsive Design', desc: 'Flow + prototipo cliccabile, design system, handoff a sviluppo.' })
+  if (['ux', 'ui', 'design', 'interfaccia', 'prototipo', 'grafica', 'interface', 'prototype', 'graphics'].some((k) => text.includes(k))) {
+    serviceMatches.push({ 
+      name: 'design', 
+      label: 'UI/UX + Responsive Design', 
+      labelEN: 'UI/UX + Responsive Design',
+      desc: 'Prototipi cliccabili, design system, handoff pulito a sviluppo.',
+      descEN: 'Clickable prototypes, design system, clean dev handoff.',
+      why: 'ti permette di testare l\'esperienza utente prima dello sviluppo, risparmiando tempo e soldi.',
+      whyEN: 'lets you test user experience before development, saving time and money.',
+      example: 'prototipo interattivo per validare il funnel di acquisto prima di scrivere codice.',
+      exampleEN: 'interactive prototype to validate the purchase funnel before writing code.'
+    })
   }
-  if (['marketing', 'seo', 'ads', 'meta', 'google'].some((k) => text.includes(k))) {
-    serviceMatches.push({ name: 'marketing', label: 'Marketing', desc: 'SEO + Ads, landing con CRO, tracking pulito, lead nurturing.' })
+  if (['marketing', 'seo', 'ads', 'meta', 'google', 'advertising', 'pubblicità', 'promozione', 'visibility', 'visibilità'].some((k) => text.includes(k))) {
+    serviceMatches.push({ 
+      name: 'marketing', 
+      label: 'Marketing', 
+      labelEN: 'Marketing',
+      desc: 'SEO + Ads, landing con CRO, tracking pulito, lead nurturing.',
+      descEN: 'SEO + Ads, CRO landing pages, clean tracking, lead nurturing.',
+      why: 'porta traffico qualificato al tuo sito e converte i visitatori in clienti.',
+      whyEN: 'brings qualified traffic to your site and converts visitors into customers.',
+      example: 'landing page A/B testata con pixel tracking completo e funnel email automatizzato.',
+      exampleEN: 'A/B tested landing page with complete pixel tracking and automated email funnel.'
+    })
   }
-  if (['iot', 'device', 'sensor', 'sensore'].some((k) => text.includes(k))) {
-    serviceMatches.push({ name: 'iot', label: 'IoT personalizzate', desc: 'Backend/API, device management, dati real-time, alert.' })
+  if (['iot', 'device', 'sensor', 'sensore', 'dispositivo', 'hardware', 'embedded', 'sensori', 'sensors', 'devices'].some((k) => text.includes(k))) {
+    serviceMatches.push({ 
+      name: 'iot', 
+      label: 'IoT personalizzate', 
+      labelEN: 'Custom IoT',
+      desc: 'Backend/API, device management, dati real-time, alert.',
+      descEN: 'Backend/API, device management, real-time data, alerts.',
+      why: 'collega i tuoi dispositivi fisici al cloud per monitoraggio e automazioni.',
+      whyEN: 'connects your physical devices to the cloud for monitoring and automation.',
+      example: 'sensori di temperatura che inviano alert se superano soglie critiche.',
+      exampleEN: 'temperature sensors that send alerts if critical thresholds are exceeded.'
+    })
   }
-  if (['consulenza', 'call', 'ora', '1h', 'review'].some((k) => text.includes(k))) {
-    serviceMatches.push({ name: 'consulting', label: '1H Consulting', desc: 'Una call mirata per roadmap, priorità e decisioni rapide.' })
+  if (['consulenza', 'call', '1h', 'review', 'consulting', 'advice', 'consiglio', 'parere', 'opinione', 'valutazione', 'assessment'].some((k) => text.includes(k))) {
+    serviceMatches.push({ 
+      name: 'consulting', 
+      label: '1H Consulting', 
+      labelEN: '1H Consulting',
+      desc: 'Una call mirata per roadmap, priorità e decisioni rapide.',
+      descEN: 'A focused call for roadmap, priorities, and quick decisions.',
+      why: 'ti aiuta a fare chiarezza su priorità e prossimi passi con un esperto.',
+      whyEN: 'helps you clarify priorities and next steps with an expert.',
+      example: 'review dell\'architettura attuale e piano d\'azione per i prossimi 3 mesi.',
+      exampleEN: 'review of current architecture and action plan for the next 3 months.'
+    })
   }
 
   if (serviceMatches.length >= 2) {
-    const list = serviceMatches.map((s, i) => `${i + 1}) ${s.label}\n   ${s.desc}`).join('\n')
+    const list = serviceMatches.map((s, i) => {
+      if (isItalian) {
+        return `**${i + 1}) ${s.label}**\nCosa fa: ${s.desc}\nPerché: ${s.why}\nEsempio: ${s.example}`
+      }
+      return `**${i + 1}) ${s.labelEN}**\nWhat it does: ${s.descEN}\nWhy: ${s.whyEN}\nExample: ${s.exampleEN}`
+    }).join('\n\n')
+    
     return isItalian
-      ? `Perfetto! Ti consiglio questi ${serviceMatches.length} servizi insieme:\n\n${list}\n\nVuoi che ti apra la sezione Servizi?`
-      : `Perfect! I recommend these ${serviceMatches.length} services together:\n\n${list}\n\nWant me to open the Services section?`
+      ? `Perfetto! Per il tuo progetto ti consiglio questi ${serviceMatches.length} servizi Metis:\n\n${list}\n\n**Come funzionano insieme:** questi servizi si integrano per creare un ecosistema completo e automatizzato.\n\nLink: /#services per i dettagli • /#contact per un preventivo`
+      : `Perfect! For your project I recommend these ${serviceMatches.length} Metis services:\n\n${list}\n\n**How they work together:** these services integrate to create a complete, automated ecosystem.\n\nLinks: /#services for details • /#contact for a quote`
   }
 
   const matched = knowledgeBase[language].find((topic) =>
