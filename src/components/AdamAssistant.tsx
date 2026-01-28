@@ -289,19 +289,16 @@ Tip: click service cards to flip and read details.`
     'chat', 'automatic reply', 'virtual assistant', 'smart assistant'
   ]
 
-  const hasEcommerce = isItalian 
-    ? ecommerceKeywordsIT.some((k) => text.includes(k))
-    : ecommerceKeywordsEN.some((k) => text.includes(k))
+  const hasEcommerce = ecommerceKeywordsIT.some((k) => text.includes(k)) || ecommerceKeywordsEN.some((k) => text.includes(k))
     
-  const hasERP = isItalian
-    ? erpKeywordsIT.some((k) => text.includes(k))
-    : erpKeywordsEN.some((k) => text.includes(k))
+  const hasERP = erpKeywordsIT.some((k) => text.includes(k)) || erpKeywordsEN.some((k) => text.includes(k))
     
-  const hasAI = isItalian
-    ? aiKeywordsIT.some((k) => text.includes(k))
-    : aiKeywordsEN.some((k) => text.includes(k))
+  const hasAI = aiKeywordsIT.some((k) => text.includes(k)) || aiKeywordsEN.some((k) => text.includes(k))
 
-  if ((hasEcommerce && hasERP && hasAI) || (text.includes('integrato') && (hasEcommerce || hasERP) && hasAI)) {
+  // Check for integrated/combined services request (both IT and EN)
+  const wantsIntegration = ['integrato', 'integrati', 'integrazione', 'integrated', 'integration', 'combined', 'together', 'insieme', 'completo', 'complete', 'all-in-one'].some((k) => text.includes(k))
+
+  if ((hasEcommerce && hasERP && hasAI) || (wantsIntegration && (hasEcommerce || hasERP) && hasAI)) {
     return isItalian
       ? `Ottima domanda! Per il tuo progetto ti servono questi 3 servizi Metis:
 
