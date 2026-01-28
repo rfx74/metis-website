@@ -70,6 +70,28 @@ const normalizeAnswer = (value: string) =>
     .replace(/\s+/g, ' ')
     .trim()
 
+const escapeHtml = (value: string) =>
+  value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+
+const formatMessageToHtml = (value: string) => {
+  const escaped = escapeHtml(value)
+
+  const withBold = escaped.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+
+  const withItalic = withBold
+    // Italic with *text*
+    .replace(/(^|[^*])\*(?!\s)([^*]+?)\*(?!\*)/g, '$1<em>$2</em>')
+    // Italic with _text_
+    .replace(/(^|[^_])_(?!\s)([^_]+?)_(?!_)/g, '$1<em>$2</em>')
+
+  return withItalic.replace(/\n/g, '<br />')
+}
+
 const POSITIVE_RESPONSES = new Set([
   'si',
   'si grazie',
@@ -850,14 +872,19 @@ export default function AdamAssistant() {
                 ))}
               </div>
             ) : (
-              messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`rounded-2xl px-4 py-3 shadow-sm break-words ${message.from === 'adam' ? 'bg-white/10 text-white border border-white/10 whitespace-pre-wrap' : 'bg-gradient-to-r from-cyan-500/30 to-fuchsia-500/20 text-white text-right'}`}
-                >
-                  {message.text}
-                </div>
-              ))
+              messages.map((message) => {
+                const formatted = formatMessageToHtml(message.text)
+                const isAdam = message.from === 'adam'
+
+                return (
+                  <div
+                    key={message.id}
+                    className={`rounded-2xl px-4 py-3 shadow-sm break-words ${isAdam ? 'bg-white/10 text-white border border-white/10' : 'bg-gradient-to-r from-cyan-500/30 to-fuchsia-500/20 text-white text-right'}`}
+                  >
+                    <span dangerouslySetInnerHTML={{ __html: formatted }} />
+                  </div>
+                )
+              })
             )}
             <div ref={bottomRef} />
           </div>
