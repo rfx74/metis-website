@@ -49,7 +49,7 @@ export default function CookieConsent() {
       {/* Floating manage badge */}
       <button
         type="button"
-        className="fixed left-4 bottom-4 z-[60] rounded-full bg-white/20 backdrop-blur-xl border border-white/30 px-4 py-2 text-sm text-white shadow-lg hover:bg-white/30 transition-colors"
+        className="fixed left-3 bottom-3 sm:left-4 sm:bottom-4 z-[60] rounded-full bg-white/20 backdrop-blur-xl border border-white/30 px-3.5 py-2 text-xs sm:text-sm text-white shadow-lg hover:bg-white/30 transition-colors"
         onClick={() => setShowPanel(true)}
       >
         {badgeLabel}
@@ -57,25 +57,27 @@ export default function CookieConsent() {
 
       {/* Consent panel */}
       {showPanel ? (
-        <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center px-4 py-6 bg-black/30 backdrop-blur-sm">
-          <div className="relative w-full max-w-3xl overflow-hidden rounded-3xl border border-white/15 bg-gradient-to-br from-[#0f172a]/90 via-[#111827]/90 to-[#0b1220]/90 text-white shadow-2xl">
+        <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center px-3 sm:px-6 py-4 sm:py-6 bg-black/30 backdrop-blur-sm">
+          <div className="relative w-full max-w-3xl max-h-[78vh] sm:max-h-none overflow-hidden rounded-3xl border border-white/15 bg-gradient-to-br from-[#0f172a]/90 via-[#111827]/90 to-[#0b1220]/90 text-white shadow-2xl">
             <div className="absolute -inset-24 bg-gradient-to-r from-cyan-500/20 via-fuchsia-500/15 to-amber-400/10 blur-3xl" aria-hidden="true" />
-            <div className="relative p-6 sm:p-8 space-y-4">
+            <div className="relative p-5 sm:p-8 space-y-4 overflow-y-auto">
               <div className="flex items-start gap-4">
                 <div className="flex-1 space-y-2">
-                  <h3 className="text-2xl font-bold">Cookie & Privacy</h3>
+                  <h3 className="text-xl sm:text-2xl font-bold">Cookie & Privacy</h3>
                   <p className="text-sm text-white/80 leading-relaxed">
-                    Usiamo cookie tecnici necessari e, solo con il tuo consenso, cookie di analisi per migliorare l’esperienza. Puoi modificare le preferenze in qualsiasi momento.
+                    Usiamo cookie tecnici necessari e, solo con il tuo consenso, cookie di analisi per migliorare l’esperienza. Puoi cambiare idea in qualsiasi momento.
                   </p>
                   <div className="text-xs text-white/70">
-                    Consulta la <a href="/privacy" className="underline underline-offset-4 hover:text-white">Privacy Policy</a> o la
+                    Consulta la <a href="/privacy" className="underline underline-offset-4 hover:text-white">Privacy Policy</a>, la
+                    {' '}
+                    <a href="/cookie-policy" className="underline underline-offset-4 hover:text-white">Cookie Policy</a> o la
                     {' '}
                     <a href="/cookie-preferences" className="underline underline-offset-4 hover:text-white">pagina preferenze cookie</a>.
                   </div>
                 </div>
               </div>
 
-              <div className="grid sm:grid-cols-2 gap-4">
+              <div className="grid sm:grid-cols-2 gap-3">
                 <div className="rounded-2xl border border-white/15 bg-white/5 p-4 space-y-2">
                   <div className="flex items-center justify-between">
                     <div>
@@ -108,28 +110,30 @@ export default function CookieConsent() {
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 sm:justify-end pt-2">
-                <button
-                  type="button"
-                  onClick={rejectNonEssential}
-                  className="w-full sm:w-auto rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-sm font-semibold hover:bg-white/15 transition-colors"
-                >
-                  Rifiuta non essenziali
-                </button>
-                <button
-                  type="button"
-                  onClick={acceptAll}
-                  className="w-full sm:w-auto rounded-xl bg-gradient-to-r from-cyan-400 to-fuchsia-500 px-4 py-3 text-sm font-semibold text-slate-900 shadow-lg hover:brightness-105 transition-all"
-                >
-                  Accetta tutti
-                </button>
-                <button
-                  type="button"
-                  onClick={saveCustom}
-                  className="w-full sm:w-auto rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-sm font-semibold hover:bg-white/15 transition-colors"
-                >
-                  Salva preferenze
-                </button>
+              <div className="sticky bottom-0 -mx-5 sm:-mx-8 px-5 sm:px-8 pt-3 pb-2 bg-gradient-to-t from-[#0b1220]/95 via-[#0b1220]/70 to-transparent">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-end">
+                  <button
+                    type="button"
+                    onClick={rejectNonEssential}
+                    className="w-full sm:w-auto rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-sm font-semibold hover:bg-white/15 transition-colors"
+                  >
+                    Rifiuta non essenziali
+                  </button>
+                  <button
+                    type="button"
+                    onClick={acceptAll}
+                    className="w-full sm:w-auto rounded-xl bg-gradient-to-r from-cyan-400 to-fuchsia-500 px-4 py-2.5 text-sm font-semibold text-slate-900 shadow-lg hover:brightness-105 transition-all"
+                  >
+                    Accetta tutti
+                  </button>
+                  <button
+                    type="button"
+                    onClick={saveCustom}
+                    className="w-full sm:w-auto rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-sm font-semibold hover:bg-white/15 transition-colors"
+                  >
+                    Salva preferenze
+                  </button>
+                </div>
               </div>
             </div>
           </div>

@@ -67,6 +67,10 @@ export default function Footer() {
               Privacy Policy
             </a>
             <span className="hidden sm:inline">•</span>
+            <a className="hover:text-gray-900 transition-colors" href="/cookie-policy">
+              Cookie Policy
+            </a>
+            <span className="hidden sm:inline">•</span>
             <button
               type="button"
               onClick={() => {

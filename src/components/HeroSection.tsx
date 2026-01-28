@@ -67,7 +67,7 @@ export default function HeroSection() {
       <motion.div className="absolute inset-0 z-0" style={{ y }}>
         <img
           src={heroPoster}
-          alt=""
+          alt="Sfondo hero Metis Srl"
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${isVideoLoaded ? 'opacity-0' : 'opacity-100'}`}
           aria-hidden="true"
         />

@@ -26,7 +26,9 @@ export default function CookiePreferencesPage() {
           <CookiePreferencesButton />
 
           <div className="text-sm text-white/70">
-            Per maggiori informazioni consulta la <Link className="underline underline-offset-4" href="/privacy">Privacy Policy</Link>.
+            Per maggiori informazioni consulta la <Link className="underline underline-offset-4" href="/privacy">Privacy Policy</Link> e la
+            {' '}
+            <Link className="underline underline-offset-4" href="/cookie-policy">Cookie Policy</Link>.
           </div>
         </div>
       </div>
