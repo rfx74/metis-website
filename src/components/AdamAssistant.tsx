@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '@/lib/LanguageContext'
 
 const OPEN_ADAM_EVENT = 'metis-open-adam'
@@ -15,46 +15,34 @@ type Message = {
 
 const copy = {
   it: {
-    welcome:
-      'Ciao! Sono ADAM. Ti spiego i servizi Metis (e-commerce, AI, ERP/automazioni, design, marketing, IoT), il metodo in 4 step e ti porto alle sezioni giuste. Se vuoi disattivarmi clicca "Disattiva".',
+    welcome: 'Ciao! Sono Adam, posso esserti di aiuto?',
     quickTips: [
-      'Cerchi un servizio? Posso consigliarti e portarti alla card corretta.',
-      'Vuoi capire il Metodo Metis in 4 step? Te lo riassumo e ti ci porto.',
-      'Se ti serve un preventivo rapido ti dico come contattarci subito (email o WhatsApp).'
+      'Suggerimento: nelle card dei servizi puoi cliccare per girarle e vedere dettagli ed esempi.',
+      'Vuoi il Metodo Metis in 4 step? Te lo riassumo e ti indico il link.',
+      'Curiosità: prova a cliccare il logo per vedere la “sorpresa”.'
     ],
     placeholder: 'Chiedi ad ADAM...',
     send: 'Invia',
     minimize: 'Minimizza',
     disable: 'Disattiva',
-    quickActions: [
-      { label: 'Vai ai Servizi', target: 'services' },
-      { label: 'Metodo Metis', target: 'method' },
-      { label: 'Chi siamo', target: 'about' },
-      { label: 'Contatti', target: 'contact' },
-    ],
+    quickActions: [],
     webSearch:
       'Non ho accesso al web in tempo reale. Posso però rispondere usando le informazioni del sito e la mia base di conoscenza. Dimmi pure cosa ti serve e lo dettaglio con esempi pratici.',
     generalFallback:
       'Dimmi quale servizio cerchi (e-commerce, AI, ERP, design, marketing, IoT) o una domanda specifica. Sono qui per aiutarti! 🤖'
   },
   en: {
-    welcome:
-      'Hi! I am ADAM. I can explain Metis services (e-commerce, AI, ERP/automation, design, marketing, IoT), the 4-step method, and guide you to the right sections. If you want to disable me, click “Disable”.',
+    welcome: 'Hi! I am Adam, how can I help you?',
     quickTips: [
-      'Looking for a service? I can recommend the right one and guide you to the correct card.',
-      'Want the 4-step Metis Method? I can summarize it and take you there.',
-      'Need a quick estimate? I can tell you how to contact us fast (email or WhatsApp).'
+      'Tip: you can click service cards to flip them and see details and examples.',
+      'Want the 4-step Metis Method? I can summarize it and share the link.',
+      'Try clicking the logo to see the “surprise”.'
     ],
     placeholder: 'Ask ADAM...',
     send: 'Send',
     minimize: 'Minimize',
     disable: 'Disable',
-    quickActions: [
-      { label: 'Go to Services', target: 'services' },
-      { label: 'Metis Method', target: 'method' },
-      { label: 'About us', target: 'about' },
-      { label: 'Contact', target: 'contact' },
-    ],
+    quickActions: [],
     webSearch:
       'I do not have real-time web access. I can still answer using the site information and my knowledge. Tell me what you need and I will add practical examples.',
     generalFallback:
@@ -67,124 +55,124 @@ const knowledgeBase = {
     {
       keywords: ['ecommerce', 'e-commerce', 'shop', 'vendere online', 'store'],
       response:
-        'E-commerce su misura: UX + checkout che converte, pagamenti/spedizioni/promo e integrazioni ERP/CRM. Esempio: catalogo sincronizzato con il gestionale, stock in tempo reale e checkout con upsell. Vuoi la card "Soluzioni e-commerce personalizzata" nei Servizi?'
+        'E-commerce su misura: UX + checkout che converte, pagamenti/spedizioni/promo e integrazioni ERP/CRM. Esempio: catalogo sincronizzato con il gestionale, stock in tempo reale e checkout con upsell. Link: /#services. Suggerimento: clicca la card per girarla e vedere i dettagli.'
     },
     {
       keywords: ['ai', 'chatbot', 'intelligenza artificiale', 'assistente', 'assistenti'],
       response:
-        'AI & chatbot: risposte su FAQ/catalogo, copilot per offerte/email, triage ticket con handoff umano. Esempio: chatbot che risponde su tempi di consegna e apre ticket al team quando serve. Vuoi vedere la card "AI Assistenti"?'
+        'AI & chatbot: risposte su FAQ/catalogo, copilot per offerte/email, triage ticket con handoff umano. Esempio: chatbot che risponde su tempi di consegna e apre ticket al team quando serve. Link: /#services. Suggerimento: clicca la card per girarla e vedere i dettagli.'
     },
     {
       keywords: ['erp', 'automazioni', 'processi', 'magazzino', 'flussi'],
       response:
-        'ERP + automazioni: ordini→magazzino→fatture, ruoli/permessi, integrazioni tra reparti e report. Esempio: ordine dal sito crea automaticamente DDT e fattura, con notifica al magazzino. Ti porto alla card "ERP & Automazioni"?'
+        'ERP + automazioni: ordini→magazzino→fatture, ruoli/permessi, integrazioni tra reparti e report. Esempio: ordine dal sito crea automaticamente DDT e fattura, con notifica al magazzino. Link: /#services. Suggerimento: clicca la card per girarla e vedere i dettagli.'
     },
     {
       keywords: ['ux', 'ui', 'design', 'interfaccia', 'prototipo'],
       response:
-        'UI/UX & product design: flow + prototipo cliccabile, design system e handoff pulito a sviluppo. Esempio: prototipo per testare funnel e micro-copy prima dello sviluppo. Vuoi aprire la card "UI/UX + Responsive Design"?'
+        'UI/UX & product design: flow + prototipo cliccabile, design system e handoff pulito a sviluppo. Esempio: prototipo per testare funnel e micro-copy prima dello sviluppo. Link: /#services. Suggerimento: clicca la card per girarla e vedere i dettagli.'
     },
     {
       keywords: ['marketing', 'seo', 'ads', 'meta', 'google'],
       response:
-        'Marketing: SEO + Ads, landing con CRO, tracking pulito (pixel/eventi/UTM) e nurturing. Esempio: landing A/B con tracciamento completo dei lead. Posso portarti alla card "Marketing".'
+        'Marketing: SEO + Ads, landing con CRO, tracking pulito (pixel/eventi/UTM) e nurturing. Esempio: landing A/B con tracciamento completo dei lead. Link: /#services. Suggerimento: clicca la card per girarla e vedere i dettagli.'
     },
     {
       keywords: ['consulenza', 'call', 'ora', '1h', 'review'],
       response:
-        '1H Consulting: una call mirata per roadmap, priorità e decisioni rapide con piano d\'azione chiaro. Esempio: review architettura e backlog con priorità per un MVP. Vuoi prenotarla da Contatti?'
+        '1H Consulting: una call mirata per roadmap, priorità e decisioni rapide con piano d\'azione chiaro. Esempio: review architettura e backlog con priorità per un MVP. Link: /#services e /#contact.'
     },
     {
       keywords: ['iot', 'device', 'sensor', 'sensore'],
       response:
-        'IoT su misura: backend/API, device management, sicurezza, dati real‑time e alert pronti per dashboard/automazioni. Esempio: sensori di produzione che inviano alert e KPI su dashboard. Ti porto alla card "Soluzioni IoT personalizzate"?'
+        'IoT su misura: backend/API, device management, sicurezza, dati real‑time e alert pronti per dashboard/automazioni. Esempio: sensori di produzione che inviano alert e KPI su dashboard. Link: /#services. Suggerimento: clicca la card per girarla e vedere i dettagli.'
     },
     {
       keywords: ['defi', 'token', 'tokenizzazione', 'web3'],
       response:
-        'DeFi e tokenizzazione: architetture compliant per asset reali e integrazione web3 nel business. Esempio: tokenizzazione di asset immobiliari con accessi regolati. Vuoi parlarne ora?'
+        'DeFi e tokenizzazione: architetture compliant per asset reali e integrazione web3 nel business. Esempio: tokenizzazione di asset immobiliari con accessi regolati. Link: /#services e /#contact.'
     },
     {
       keywords: ['metodo', 'processo', 'portfolio', 'come lavorate', 'step'],
       response:
-        'Metodo Metis in 4 step: 1) Analisi strategica, 2) Architettura, 3) Sviluppo agile, 4) Rilascio e miglioramento. Esempio: roadmap MVP in 4-6 settimane con rilasci settimanali. Posso portarti alla sezione Metodo per i dettagli.'
+        'Metodo Metis in 4 step: 1) Analisi strategica, 2) Architettura, 3) Sviluppo agile, 4) Rilascio e miglioramento. Esempio: roadmap MVP in 4-6 settimane con rilasci settimanali. Link: /#method.'
     },
     {
       keywords: ['preventivo', 'prezzo', 'costo', 'quanto'],
       response:
-        'Per un preventivo rapido: scrivici da Contatti (email) oppure clicca WhatsApp in basso a destra. Rispondiamo entro 24h con priorità + stima.'
+        'Per un preventivo rapido: scrivici da Contatti (email) oppure clicca WhatsApp in basso a destra. Rispondiamo entro 24h con priorità + stima. Link: /#contact.'
     },
     {
       keywords: ['contatto', 'contattare', 'whatsapp', 'telefono', 'chiamare'],
       response:
-        'Puoi scriverci dal form Contatti o su WhatsApp Business (risposta entro 24h). Vuoi che ti apra la sezione Contatti?'
+        'Puoi scriverci dal form Contatti o su WhatsApp Business (risposta entro 24h). Link: /#contact.'
     },
     {
       keywords: ['privacy', 'cookie', 'gdpr'],
       response:
-        'Privacy e cookie: trovi Privacy Policy e Preferenze cookie nel footer. Posso aprirti subito la pagina dedicata.'
+        'Privacy e cookie: trovi Privacy Policy e Cookie Policy nel footer. Link: /privacy • /cookie-policy • /cookie-preferences.'
     }
   ],
   en: [
     {
       keywords: ['ecommerce', 'e-commerce', 'shop', 'sell online', 'store', 'online store'],
       response:
-        'Custom e-commerce: high‑conversion UX + checkout, payments/shipping/promos, and ERP/CRM integrations. Example: real‑time stock sync and an upsell‑ready checkout. Want the "Custom e-commerce solutions" card?'
+        'Custom e-commerce: high‑conversion UX + checkout, payments/shipping/promos, and ERP/CRM integrations. Example: real‑time stock sync and an upsell‑ready checkout. Link: /#services. Tip: click the card to flip it and read details.'
     },
     {
       keywords: ['ai', 'chatbot', 'artificial intelligence', 'assistant', 'assistants'],
       response:
-        'AI & chatbots: answers for FAQ/catalog, copilot for quotes/emails, ticket triage with human handoff. Example: a bot that answers delivery times and escalates complex cases. Want the "AI Assistants" card?'
+        'AI & chatbots: answers for FAQ/catalog, copilot for quotes/emails, ticket triage with human handoff. Example: a bot that answers delivery times and escalates complex cases. Link: /#services. Tip: click the card to flip it and read details.'
     },
     {
       keywords: ['erp', 'automation', 'process', 'warehouse', 'workflow'],
       response:
-        'ERP + automation: orders→warehouse→invoices, roles/permissions, cross‑department integrations and reporting. Example: site order auto‑creates picking list and invoice. Want the "ERP & Automation" card?'
+        'ERP + automation: orders→warehouse→invoices, roles/permissions, cross‑department integrations and reporting. Example: site order auto‑creates picking list and invoice. Link: /#services. Tip: click the card to flip it and read details.'
     },
     {
       keywords: ['ux', 'ui', 'design', 'interface', 'prototype'],
       response:
-        'UI/UX & product design: flows + clickable prototype, design system, clean dev handoff. Example: prototype to test funnel and micro‑copy before build. Want the "UI/UX + Responsive Design" card?'
+        'UI/UX & product design: flows + clickable prototype, design system, clean dev handoff. Example: prototype to test funnel and micro‑copy before build. Link: /#services. Tip: click the card to flip it and read details.'
     },
     {
       keywords: ['marketing', 'seo', 'ads', 'meta', 'google'],
       response:
-        'Marketing: SEO + Ads, CRO‑focused landing pages, clean tracking (pixels/events/UTM) and nurturing. Example: A/B landing pages with full lead tracking. Want the "Marketing" card?'
+        'Marketing: SEO + Ads, CRO‑focused landing pages, clean tracking (pixels/events/UTM) and nurturing. Example: A/B landing pages with full lead tracking. Link: /#services. Tip: click the card to flip it and read details.'
     },
     {
       keywords: ['consulting', 'call', 'hour', '1h', 'review'],
       response:
-        '1H Consulting: a focused call for roadmap, priorities and fast decisions with a clear action plan. Example: architecture review and MVP backlog priorities. Want to book it from Contact?'
+        '1H Consulting: a focused call for roadmap, priorities and fast decisions with a clear action plan. Example: architecture review and MVP backlog priorities. Link: /#services and /#contact.'
     },
     {
       keywords: ['iot', 'device', 'sensor'],
       response:
-        'Custom IoT: backend/API, device management, security, real‑time data and alerts for dashboards/automation. Example: production sensors sending alerts and KPI dashboards. Want the "Custom IoT solutions" card?'
+        'Custom IoT: backend/API, device management, security, real‑time data and alerts for dashboards/automation. Example: production sensors sending alerts and KPI dashboards. Link: /#services. Tip: click the card to flip it and read details.'
     },
     {
       keywords: ['defi', 'token', 'tokenization', 'web3'],
       response:
-        'DeFi & tokenization: compliant architectures for real‑world assets with web3 integration. Example: tokenized real‑estate with regulated access. Want to discuss it now?'
+        'DeFi & tokenization: compliant architectures for real‑world assets with web3 integration. Example: tokenized real‑estate with regulated access. Link: /#services and /#contact.'
     },
     {
       keywords: ['method', 'process', 'portfolio', 'how you work', 'steps'],
       response:
-        'Metis 4‑step method: 1) Strategy analysis, 2) Architecture, 3) Agile development, 4) Release & improvement. Example: a 4–6 week MVP roadmap with weekly releases. Want the Method section?'
+        'Metis 4‑step method: 1) Strategy analysis, 2) Architecture, 3) Agile development, 4) Release & improvement. Example: a 4–6 week MVP roadmap with weekly releases. Link: /#method.'
     },
     {
       keywords: ['quote', 'price', 'cost', 'how much'],
       response:
-        'For a quick estimate: contact us via the Contact form or WhatsApp. We respond within 24h with priorities + a rough estimate.'
+        'For a quick estimate: contact us via the Contact form or WhatsApp. We respond within 24h with priorities + a rough estimate. Link: /#contact.'
     },
     {
       keywords: ['contact', 'whatsapp', 'phone', 'call'],
       response:
-        'You can reach us through the Contact form or WhatsApp Business (reply within 24h). Want me to open the Contact section?'
+        'You can reach us through the Contact form or WhatsApp Business (reply within 24h). Link: /#contact.'
     },
     {
       keywords: ['privacy', 'cookie', 'gdpr'],
       response:
-        'Privacy & cookies: you can find Privacy Policy and Cookie Preferences in the footer. Want me to open it?'
+        'Privacy & cookies: you can find Privacy Policy and Cookie Policy in the footer. Links: /privacy • /cookie-policy • /cookie-preferences.'
     }
   ]
 }
@@ -199,25 +187,81 @@ function getReply(input: string, language: 'it' | 'en') {
     return copy[language].webSearch
   }
 
+  if (
+    text.includes('tutti i servizi') ||
+    text.includes('tutti i nostri servizi') ||
+    text.includes('all services') ||
+    text.includes('all of your services') ||
+    text.includes('all the services')
+  ) {
+    return isItalian
+      ? 'Ecco tutti i servizi Metis con esempi:
+
+1) E-commerce: UX+checkout, pagamenti, integrazioni. Esempio: stock sincronizzato con ERP e checkout con upsell.
+2) AI Assistenti: chatbot 24/7 su FAQ/catalogo. Esempio: bot che risponde su consegne e apre ticket.
+3) ERP & Automazioni: processi end‑to‑end. Esempio: ordine → magazzino → fattura automatica.
+4) UI/UX Design: prototipi e design system. Esempio: prototipo cliccabile per validare il funnel.
+5) Marketing: SEO+Ads, CRO, tracking. Esempio: landing A/B con tracciamento lead.
+6) IoT: backend, device management, dati real‑time. Esempio: sensori con dashboard KPI.
+7) 1H Consulting: review e roadmap. Esempio: call per priorità MVP.
+
+Link utili: Servizi /#services • Metodo /#method • Contatti /#contact
+Suggerimento: clicca le card dei servizi per girarle e leggere i dettagli.'
+      : 'Here are all Metis services with examples:
+
+1) E-commerce: UX+checkout, payments, integrations. Example: ERP‑synced stock and upsell checkout.
+2) AI Assistants: 24/7 chatbot for FAQ/catalog. Example: bot answers delivery times and opens tickets.
+3) ERP & Automation: end‑to‑end processes. Example: order → warehouse → invoice automatically.
+4) UI/UX Design: prototypes and design systems. Example: clickable prototype to validate the funnel.
+5) Marketing: SEO+Ads, CRO, tracking. Example: A/B landing with lead tracking.
+6) IoT: backend, device management, real‑time data. Example: sensors with KPI dashboards.
+7) 1H Consulting: review and roadmap. Example: MVP priorities call.
+
+Useful links: Services /#services • Method /#method • Contact /#contact
+Tip: click service cards to flip and read details.'
+  }
+
   if (text.includes('come funziona') || text.includes('spiegami') || text.includes('come lavora') || text.includes('perché') || text.includes('how does') || text.includes('explain')) {
     if (text.includes('e-commerce') || text.includes('vendere online') || text.includes('shop')) {
       return isItalian
         ? 'E-commerce: creiamo siti di vendita con UX che converte, checkout ottimizzato, pagamenti, spedizioni e promo. Integrazione con ERP per sincronizzare catalogo, ordini e inventario in tempo reale. Esempio: stock aggiornato live e promozioni automatiche. ROI: meno errori manuali, più vendite.'
         : 'E-commerce: we build high‑conversion stores with optimized checkout, payments, shipping and promos. ERP integration keeps catalog, orders and inventory synced in real time. Example: live stock updates and automatic promos. ROI: fewer manual errors and more sales.'
-    }
-    if (text.includes('ai') || text.includes('assistente') || text.includes('chatbot')) {
-      return isItalian
-        ? 'AI Assistenti: chatbot 24/7 su FAQ, catalogo e preventivi. Usa AI generativa per suggerire offerte, rispondere a email e fare triage ticket. Se la domanda è complessa, passa a un umano. Esempio: bot che risponde su tempi di consegna e crea ticket. Vantaggio: meno carico sul team, clienti soddisfatti.'
-        : 'AI Assistants: 24/7 chatbots for FAQ, catalog and quotes. Uses generative AI to suggest offers, answer emails and triage tickets, with human handoff for complex cases. Example: bot answers delivery times and creates a support ticket. Benefit: less team load, happier customers.'
-    }
-    if (text.includes('erp') || text.includes('gestionale') || text.includes('contabilità') || text.includes('magazzino')) {
-      return isItalian
-        ? 'ERP & Automazioni: organizziamo i processi (ordini→magazzino→fatture→contabilità) in un’unica piattaforma. Ruoli, permessi, approvazioni automatiche, integrazioni con banca/fornitori. Esempio: ordine dal sito crea DDT e fattura, con alert al magazzino. Risultato: trasparenza e decisioni basate sui dati.'
-        : 'ERP & Automation: we centralize processes (orders→warehouse→invoicing→accounting) in one platform. Roles/permissions, automatic approvals, and integrations with banks/suppliers. Example: web order auto‑creates picking list and invoice with warehouse alerts. Result: transparency and data‑driven decisions.'
-    }
-    return isItalian
       ? 'Posso spiegare ogni servizio. Dimmi quale ti interessa (e-commerce, AI, ERP, design, marketing, IoT) e ti dettaglio come funziona e perché fa la differenza.'
       : 'I can explain any service. Tell me which one you need (e-commerce, AI, ERP, design, marketing, IoT) and I will detail how it works and why it matters.'
+  }
+
+  if (
+    text.includes('tutti i servizi') ||
+    text.includes('tutti i nostri servizi') ||
+    text.includes('all services') ||
+    text.includes('all of your services') ||
+    text.includes('all the services')
+  ) {
+    return isItalian
+      ? 'Ecco tutti i servizi Metis con esempi:
+
+1) E-commerce: UX+checkout, pagamenti, integrazioni. Esempio: stock sincronizzato con ERP e checkout con upsell.
+2) AI Assistenti: chatbot 24/7 su FAQ/catalogo. Esempio: bot che risponde su consegne e apre ticket.
+3) ERP & Automazioni: processi end‑to‑end. Esempio: ordine → magazzino → fattura automatica.
+4) UI/UX Design: prototipi e design system. Esempio: prototipo cliccabile per validare il funnel.
+5) Marketing: SEO+Ads, CRO, tracking. Esempio: landing A/B con tracciamento lead.
+6) IoT: backend, device management, dati real‑time. Esempio: sensori con dashboard KPI.
+7) 1H Consulting: review e roadmap. Esempio: call per priorità MVP.
+
+Link utili: Servizi /#services • Metodo /#method • Contatti /#contact
+Suggerimento: clicca le card dei servizi per girarle e leggere i dettagli.'
+      : 'Here are all Metis services with examples:
+
+1) E-commerce: UX+checkout, payments, integrations. Example: ERP‑synced stock and upsell checkout.
+2) AI Assistants: 24/7 chatbot for FAQ/catalog. Example: bot answers delivery times and opens tickets.
+3) ERP & Automation: end‑to‑end processes. Example: order → warehouse → invoice automatically.
+4) UI/UX Design: prototypes and design systems. Example: clickable prototype to validate the funnel.
+5) Marketing: SEO+Ads, CRO, tracking. Example: A/B landing with lead tracking.
+6) IoT: backend, device management, real‑time data. Example: sensors with KPI dashboards.
+7) 1H Consulting: review and roadmap. Example: MVP priorities call.
+
+Useful links: Services /#services • Method /#method • Contact /#contact
+Tip: click service cards to flip and read details.'
   }
 
   // Detect complex scenarios (e.g., "vendita online + gestionale + assistente")
@@ -271,8 +315,8 @@ function getReply(input: string, language: 'it' | 'en') {
 
   if (text.includes('suggeriscimi') || text.includes('consigliami') || text.includes('quali sono') || text.includes('che cosa') || text.includes('servizio') || text.includes('servizi') || text.includes('services')) {
     return isItalian
-      ? 'Ecco i 7 servizi Metis:\n\n1) E-commerce: UX+checkout, pagamenti, integrazioni\n2) AI Assistenti: Chatbot 24/7 su FAQ/catalogo\n3) ERP & Automazioni: Processi end-to-end\n4) UI/UX Design: Prototipi e design system\n5) Marketing: SEO+Ads, landing, tracking\n6) IoT: Backend, device management, dati real-time\n7) 1H Consulting: Review e roadmap\n\nCerchi uno in particolare?'
-      : 'Here are the 7 Metis services:\n\n1) E-commerce: UX+checkout, payments, integrations\n2) AI Assistants: 24/7 chatbot for FAQ/catalog\n3) ERP & Automation: end‑to‑end processes\n4) UI/UX Design: prototypes and design systems\n5) Marketing: SEO+Ads, landing, tracking\n6) IoT: backend, device management, real‑time data\n7) 1H Consulting: review and roadmap\n\nWhich one are you interested in?'
+      ? 'Ecco i 7 servizi Metis:\n\n1) E-commerce: UX+checkout, pagamenti, integrazioni\n2) AI Assistenti: Chatbot 24/7 su FAQ/catalogo\n3) ERP & Automazioni: Processi end-to-end\n4) UI/UX Design: Prototipi e design system\n5) Marketing: SEO+Ads, landing, tracking\n6) IoT: Backend, device management, dati real-time\n7) 1H Consulting: Review e roadmap\n\nLink utili: Servizi /#services • Metodo /#method • Contatti /#contact\nSuggerimento: clicca le card dei servizi per girarle e leggere i dettagli.'
+      : 'Here are the 7 Metis services:\n\n1) E-commerce: UX+checkout, payments, integrations\n2) AI Assistants: 24/7 chatbot for FAQ/catalog\n3) ERP & Automation: end‑to‑end processes\n4) UI/UX Design: prototypes and design systems\n5) Marketing: SEO+Ads, landing, tracking\n6) IoT: backend, device management, real‑time data\n7) 1H Consulting: review and roadmap\n\nUseful links: Services /#services • Method /#method • Contact /#contact\nTip: click service cards to flip and read details.'
   }
 
   return copy[language].generalFallback
@@ -319,6 +363,13 @@ export default function AdamAssistant() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, open])
 
+  useEffect(() => {
+    const first = messagesRef.current[0]
+    if (first?.id === 'welcome' && first.text !== copy[language].welcome) {
+      setMessages([{ ...first, text: copy[language].welcome }])
+    }
+  }, [language])
+
   const sendMessage = () => {
     const trimmed = input.trim()
     if (!trimmed) return
@@ -337,14 +388,6 @@ export default function AdamAssistant() {
 
     setMessages((prev) => [...prev, userMessage, reply])
     setInput('')
-  }
-
-  const quickActions = useMemo(() => copy[language].quickActions, [language])
-
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id)
-    if (!element) return
-    element.scrollIntoView({ behavior: 'smooth' })
   }
 
   const disableAssistant = () => {
@@ -457,19 +500,6 @@ export default function AdamAssistant() {
           </div>
 
           <div className="px-5 pb-4 space-y-3 border-t border-white/10 bg-[#0b1220]/85">
-            <div className="flex flex-wrap gap-2">
-              {quickActions.map((action) => (
-                <button
-                  key={action.target}
-                  type="button"
-                  onClick={() => scrollToSection(action.target)}
-                  className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-white/80 hover:text-white hover:bg-white/10 transition-colors"
-                >
-                  {action.label}
-                </button>
-              ))}
-            </div>
-
             <div className="flex items-center gap-2">
               <input
                 value={input}
